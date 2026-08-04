@@ -1,0 +1,78 @@
+benchmark_id: public-express-v1
+library: developable-rest-express
+framework_scope: express
+
+review:
+  author: adityaarchunananand
+  reviewer: adityaarchunananand
+  review_mode: bootstrap_self_review
+  reviewed_at: 2026-08-04
+  rationale: Initial solo-maintainer labels were inspected against pinned public source snapshots.
+
+repos:
+  - repo_id: node-express-boilerplate
+    source: https://github.com/hagopj13/node-express-boilerplate.git
+    revision: 179ae84efec61b14206d0305d941daed6c6d07f9
+  - repo_id: node-express-typeorm-boilerplate
+    source: https://github.com/OsamaShahid/node-express-typeorm-boilerplate.git
+    revision: 97a0a24e87a00f02f662efe8c9181b81a95b08d5
+  - repo_id: express-typescript-boilerplate
+    source: https://github.com/w3tecch/express-typescript-boilerplate.git
+    revision: 17727010f7f098d8ca8b78da0a5b3c7297659381
+  - repo_id: bulletproof-nodejs
+    source: https://github.com/santiq/bulletproof-nodejs.git
+    revision: 7ce1b4690c4e96659cb1ed0d367b08b3ab35a24b
+  - repo_id: express-typescript
+    source: https://github.com/edwinhern/express-typescript.git
+    revision: 983fa0413659cd921c5754b00f7817903eb91364
+  - repo_id: express-mongoose-es6-rest-api
+    source: https://github.com/kunalkapadia/express-mongoose-es6-rest-api.git
+    revision: 247fedde56e380fae720ce65ff65a7d0b034b3e2
+
+expected_conventions:
+  node-express-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  node-express-typeorm-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_manager_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  express-typescript-boilerplate:
+    route_declaration_style: decorator_routing
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  bulletproof-nodejs:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  express-typescript:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: zod_validation_middleware
+    service_repository_layering: feature_service_layer
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: vitest_test_layout
+  express-mongoose-es6-rest-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+
+notes:
+  - All sources are public MIT-licensed repositories pinned to full Git commit SHAs.
+  - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.

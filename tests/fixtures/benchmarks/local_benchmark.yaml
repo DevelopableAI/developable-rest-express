@@ -1,0 +1,44 @@
+benchmark_id: fixture-benchmark
+library: developable-rest-express
+framework_scope: express
+
+review:
+  author: adityaarchunananand
+  reviewer: adityaarchunananand
+  review_mode: bootstrap_self_review
+  reviewed_at: 2026-08-04
+  rationale: Local fixtures provide bootstrap-period deterministic regression coverage.
+
+repos:
+  - repo_id: layered-fixture
+    source: ../repos/express_layered
+  - repo_id: inline-fixture
+    source: ../repos/express_inline
+  - repo_id: ambiguous-fixture
+    source: ../repos/ambiguous_express
+
+expected_conventions:
+  layered-fixture:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  inline-fixture:
+    route_declaration_style: inline_app_routes
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: layering_unclear
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  ambiguous-fixture:
+    route_declaration_style: mixed_routes
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: layering_unclear
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+
+notes:
+  - Local fixture benchmark for developable-rest-express tests.

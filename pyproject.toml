@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "developable-rest-express"
+version = "0.1.0"
+description = "Repo-aware harness for turning REST service conventions into portable AI development tooling"
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "DevelopableAI" }]
+dependencies = [
+    "pydantic>=2.7.4,<3.0.0",
+    "PyYAML>=6.0.1,<7.0.0",
+]
+
+[project.scripts]
+developable-rest-express = "developable_rest_express.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/developableai/developable-rest-express"
+Repository = "https://github.com/developableai/developable-rest-express"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["developable_rest_express*"]

@@ -1,0 +1,75 @@
+profile_id: public-express-v1
+library: developable-rest-express
+purpose: Curated public Express services for convention inference and benchmark development
+expected_framework: express
+
+reference_repos:
+  - repo_id: node-express-boilerplate
+    source: https://github.com/hagopj13/node-express-boilerplate.git
+    revision: 179ae84efec61b14206d0305d941daed6c6d07f9
+  - repo_id: node-express-typeorm-boilerplate
+    source: https://github.com/OsamaShahid/node-express-typeorm-boilerplate.git
+    revision: 97a0a24e87a00f02f662efe8c9181b81a95b08d5
+  - repo_id: express-typescript-boilerplate
+    source: https://github.com/w3tecch/express-typescript-boilerplate.git
+    revision: 17727010f7f098d8ca8b78da0a5b3c7297659381
+
+context_repos: []
+
+repo_metadata:
+  node-express-boilerplate:
+    framework: express
+    language: javascript
+    maturity: gold
+    owner: hagopj13
+  node-express-typeorm-boilerplate:
+    framework: express
+    language: typescript
+    maturity: silver
+    owner: OsamaShahid
+  express-typescript-boilerplate:
+    framework: express
+    language: typescript
+    maturity: silver
+    owner: w3tecch
+  bulletproof-nodejs:
+    framework: express
+    language: typescript
+    maturity: gold
+    owner: santiq
+  express-typescript:
+    framework: express
+    language: typescript
+    maturity: silver
+    owner: edwinhern
+  express-mongoose-es6-rest-api:
+    framework: express
+    language: javascript
+    maturity: silver
+    owner: kunalkapadia
+
+inference_scope:
+  - routes
+  - validation
+  - auth
+  - data_access
+  - testing
+
+safety_policy:
+  require_approval:
+    - write_operations
+    - schema_changes
+
+output_targets:
+  - benchmark_report
+
+evaluation_set:
+  - repo_id: bulletproof-nodejs
+    source: https://github.com/santiq/bulletproof-nodejs.git
+    revision: 7ce1b4690c4e96659cb1ed0d367b08b3ab35a24b
+  - repo_id: express-typescript
+    source: https://github.com/edwinhern/express-typescript.git
+    revision: 983fa0413659cd921c5754b00f7817903eb91364
+  - repo_id: express-mongoose-es6-rest-api
+    source: https://github.com/kunalkapadia/express-mongoose-es6-rest-api.git
+    revision: 247fedde56e380fae720ce65ff65a7d0b034b3e2

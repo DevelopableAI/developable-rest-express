@@ -1,0 +1,23 @@
+profile_id: fixture-local-profile
+library: developable-rest-express
+purpose: Local fixture profile for analyzer tests
+expected_framework: express
+
+reference_repos:
+  - repo_id: layered-fixture
+    source: ../repos/express_layered
+  - repo_id: inline-fixture
+    source: ../repos/express_inline
+
+context_repos:
+  - repo_id: ambiguous-fixture
+    source: ../repos/ambiguous_express
+
+inference_scope:
+  - routes
+  - validation
+  - auth
+  - data_access
+  - testing
+  - ci_commands
+  - error_contract

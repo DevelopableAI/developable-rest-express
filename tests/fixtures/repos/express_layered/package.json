@@ -1,0 +1,8 @@
+{
+  "name": "express-layered",
+  "dependencies": {
+    "express": "^4.0.0",
+    "joi": "^17.0.0",
+    "supertest": "^7.0.0"
+  }
+}

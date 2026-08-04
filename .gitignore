@@ -1,0 +1,26 @@
+# Python environments and generated packages
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Test and tooling output
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Harness caches and generated benchmark artifacts
+.developable-rest-express/
+benchmark-reports/
+
+# Local editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.log

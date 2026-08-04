@@ -1,0 +1,21 @@
+profile_id: fixture-mixed-profile
+library: developable-rest-express
+purpose: Mixed local and GitHub inputs for preparation tests
+expected_framework: express
+
+reference_repos:
+  - repo_id: layered-fixture
+    source: ../repos/express_layered
+  - repo_id: remote-express
+    source: https://github.com/example/remote-express-service
+
+evaluation_set:
+  - repo_id: ambiguous-fixture
+    source: ../repos/ambiguous_express
+
+inference_scope:
+  - routes
+  - validation
+  - auth
+  - data_access
+  - testing
