@@ -9,10 +9,11 @@ import subprocess
 from pydantic import ValidationError
 
 from developable_rest_express.analysis import analyze_profile
+from developable_rest_express.adapters.express import analyze_express_repo
 from developable_rest_express.benchmark_loader import load_benchmark
 from developable_rest_express.evaluation import evaluate_benchmark
 from developable_rest_express.governance import load_governance, validate_benchmark_review
-from developable_rest_express.models import BenchmarkFixture, BenchmarkReview, RepoReference
+from developable_rest_express.models import BenchmarkFixture, BenchmarkReview, RepoHandle, RepoReference
 from developable_rest_express.profile_loader import load_profile
 from developable_rest_express.reporting import (
     render_analysis_json,
@@ -193,6 +194,43 @@ reference_repos:
         self.assertEqual(ambiguous["route_declaration_style"].inferred_value, "mixed_routes")
         self.assertIn(ambiguous["route_declaration_style"].bucket, {"low", "medium"})
         self.assertEqual(ambiguous["test_layout_shape"].inferred_value, "no_clear_tests")
+
+    def test_detector_regression_fixture_recognizes_layering_feature_routes_and_vitest(self) -> None:
+        root = FIXTURES_ROOT / "repos" / "detector_regressions"
+        assessments = {
+            assessment.convention_name: assessment
+            for assessment in analyze_express_repo(
+                RepoHandle(
+                    repo_id="detector-regressions",
+                    source=str(root),
+                    source_kind="local_path",
+                    role="reference",
+                    local_path=str(root),
+                    framework="express",
+                    language="typescript",
+                )
+            )
+        }
+        self.assertEqual(assessments["service_repository_layering"].inferred_value, "controller_service_model")
+        self.assertEqual(assessments["route_declaration_style"].inferred_value, "feature_router_modules")
+        self.assertEqual(assessments["test_layout_shape"].inferred_value, "vitest_test_layout")
+
+        jest_root = FIXTURES_ROOT / "repos" / "jest_non_supertest"
+        jest_assessments = {
+            assessment.convention_name: assessment
+            for assessment in analyze_express_repo(
+                RepoHandle(
+                    repo_id="jest-non-supertest",
+                    source=str(jest_root),
+                    source_kind="local_path",
+                    role="reference",
+                    local_path=str(jest_root),
+                    framework="express",
+                    language="javascript",
+                )
+            )
+        }
+        self.assertEqual(jest_assessments["test_layout_shape"].inferred_value, "jest_test_layout")
 
     def test_benchmark_evaluation_and_reports(self) -> None:
         benchmark_path = FIXTURES_ROOT / "benchmarks" / "local_benchmark.yaml"

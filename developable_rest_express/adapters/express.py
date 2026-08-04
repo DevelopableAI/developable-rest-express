@@ -86,7 +86,21 @@ def _detect_route_declaration_style(repo: RepoHandle, snapshot: RepoSnapshot) ->
         app_route_hits += len(re.findall(r"\bapp\.(get|post|put|delete|patch|options|head)\(", text))
         router_route_hits += len(re.findall(r"\brouter\.(get|post|put|delete|patch|options|head)\(", text))
 
-    if router_files > 0 and app_route_hits == 0:
+    decorator_hits = sum(_read(path).count("@Controller(") for path in snapshot.code_files)
+    feature_router_files = sum(
+        "router" in path.stem.lower()
+        and "routes" not in {part.lower() for part in path.relative_to(snapshot.root).parts}
+        and "api" in {part.lower() for part in path.relative_to(snapshot.root).parts}
+        for path in snapshot.code_files
+    )
+
+    if decorator_hits or "routing-controllers" in _package_text(snapshot):
+        inferred = "decorator_routing"
+        ambiguity = 0.08 if decorator_hits else 0.25
+    elif feature_router_files:
+        inferred = "feature_router_modules"
+        ambiguity = 0.12
+    elif router_files > 0 and app_route_hits == 0:
         inferred = "express_router_modules"
         ambiguity = 0.1 if router_route_hits else 0.05
     elif app_route_hits > 0 and router_files == 0:
@@ -102,6 +116,8 @@ def _detect_route_declaration_style(repo: RepoHandle, snapshot: RepoSnapshot) ->
     route_evidence.append(f"Detected {router_files} router-oriented files.")
     route_evidence.append(f"Detected {app_route_hits} app-level route call sites in route candidates.")
     route_evidence.append(f"Detected {router_route_hits} router-level route call sites in route candidates.")
+    route_evidence.append(f"Detected {decorator_hits} controller decorators.")
+    route_evidence.append(f"Detected {feature_router_files} feature router files.")
     return _build_assessment(
         repo=repo,
         convention_name="route_declaration_style",
@@ -109,7 +125,7 @@ def _detect_route_declaration_style(repo: RepoHandle, snapshot: RepoSnapshot) ->
         evidence=route_evidence,
         parser_match_rate=_ratio(router_files + app_route_hits + router_route_hits, max(len(snapshot.route_files), 1) * 4),
         structural_match_rate=_ratio(router_files, max(len(snapshot.route_files), 1)),
-        independent_detector_agreement=0.85 if inferred != "unsupported" else 0.2,
+        independent_detector_agreement=0.9 if inferred in {"decorator_routing", "feature_router_modules"} else (0.85 if inferred != "unsupported" else 0.2),
         test_evidence_rate=_test_signal(snapshot),
         ambiguity_rate=ambiguity,
         conflicts=["Repo mixes multiple route declaration styles."] if inferred == "mixed_routes" else [],
@@ -212,28 +228,62 @@ def _detect_validation_at_edge(repo: RepoHandle, snapshot: RepoSnapshot) -> Conv
 
 
 def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionAssessment:
-    controllers_dir = _dir_count(snapshot.code_files, "controllers")
+    controllers_dir = _dir_count(snapshot.code_files, "controllers") + _dir_count(snapshot.code_files, "controller")
     services_dir = _dir_count(snapshot.code_files, "services")
     repositories_dir = _dir_count(snapshot.code_files, "repositories") + _dir_count(snapshot.code_files, "repos")
+    managers_dir = _dir_count(snapshot.code_files, "manager") + _dir_count(snapshot.code_files, "managers")
+    models_dir = _dir_count(snapshot.code_files, "models") + _dir_count(snapshot.code_files, "model")
+    controllers_dir += sum("controller" in path.stem.lower() for path in snapshot.code_files)
+    models_dir += sum("model" in path.stem.lower() for path in snapshot.code_files)
     controller_to_service = 0
     service_to_repo = 0
     controller_to_repo = 0
+    controller_to_manager = 0
+    manager_to_model = 0
+    controller_to_model = 0
+    service_to_model = 0
 
     for path in snapshot.code_files:
         imports = _extract_imports(_read(path))
         lower_parts = {part.lower() for part in path.relative_to(snapshot.root).parts}
-        if "controllers" in lower_parts:
+        if {"controllers", "controller"} & lower_parts or "controller" in path.stem.lower():
             controller_to_service += sum("service" in item.lower() for item in imports)
             controller_to_repo += sum("repo" in item.lower() or "repository" in item.lower() for item in imports)
+            controller_to_manager += sum("manager" in item.lower() for item in imports)
+            controller_to_model += sum("model" in item.lower() for item in imports)
         if "services" in lower_parts:
             service_to_repo += sum("repo" in item.lower() or "repository" in item.lower() for item in imports)
+            service_to_model += sum("model" in item.lower() for item in imports)
+        if {"manager", "managers"} & lower_parts:
+            manager_to_model += sum("model" in item.lower() for item in imports)
+
+    feature_service_files = sum(
+        "api" in {part.lower() for part in path.relative_to(snapshot.root).parts}
+        and "service" in path.stem.lower()
+        for path in snapshot.code_files
+    )
 
     if controllers_dir and services_dir and repositories_dir and controller_to_service and service_to_repo:
         inferred = "controller_service_repository"
         ambiguity = 0.08
+    elif controllers_dir and services_dir and models_dir and controller_to_service and service_to_model:
+        inferred = "controller_service_model"
+        ambiguity = 0.12
+    elif controllers_dir and managers_dir and models_dir and controller_to_manager and manager_to_model:
+        inferred = "controller_manager_model"
+        ambiguity = 0.12
+    elif controllers_dir and models_dir and controller_to_model:
+        inferred = "controller_model"
+        ambiguity = 0.18
     elif controllers_dir and repositories_dir and controller_to_repo:
         inferred = "controller_repository"
         ambiguity = 0.3
+    elif services_dir and models_dir:
+        inferred = "service_data_access"
+        ambiguity = 0.2
+    elif feature_service_files:
+        inferred = "feature_service_layer"
+        ambiguity = 0.25
     elif _dir_count(snapshot.code_files, "handlers"):
         inferred = "flat_handlers"
         ambiguity = 0.45
@@ -245,9 +295,16 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
         f"Controller directories detected: {controllers_dir}.",
         f"Service directories detected: {services_dir}.",
         f"Repository directories detected: {repositories_dir}.",
+        f"Manager directories detected: {managers_dir}.",
+        f"Model directories detected: {models_dir}.",
         f"Controller->service imports: {controller_to_service}.",
         f"Service->repository imports: {service_to_repo}.",
         f"Controller->repository imports: {controller_to_repo}.",
+        f"Controller->manager imports: {controller_to_manager}.",
+        f"Manager->model imports: {manager_to_model}.",
+        f"Controller->model imports: {controller_to_model}.",
+        f"Service->model imports: {service_to_model}.",
+        f"Feature service files detected: {feature_service_files}.",
     ]
     return _build_assessment(
         repo=repo,
@@ -255,8 +312,8 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
         inferred_value=inferred,
         evidence=evidence,
         parser_match_rate=_ratio(controller_to_service + service_to_repo + controller_to_repo, max(len(snapshot.code_files), 1) * 2),
-        structural_match_rate=_ratio(controllers_dir + services_dir + repositories_dir, 3),
-        independent_detector_agreement=0.92 if inferred == "controller_service_repository" else 0.5,
+        structural_match_rate=_ratio(controllers_dir + services_dir + repositories_dir + managers_dir + models_dir, 3),
+        independent_detector_agreement=0.92 if inferred in {"controller_service_repository", "controller_service_model", "controller_manager_model"} else 0.7 if inferred != "layering_unclear" else 0.5,
         test_evidence_rate=_test_signal(snapshot),
         ambiguity_rate=ambiguity,
         conflicts=["Controller layer bypasses services and reaches repositories directly."] if inferred == "controller_repository" else [],
@@ -311,15 +368,22 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
     test_dir_hits = len(snapshot.test_files)
     supertest_hits = 0
     jest_config = any(path.name.startswith("jest.config") for path in snapshot.root.glob("jest.config.*"))
+    vitest_config = any(path.name.startswith("vitest.config") for path in snapshot.root.glob("vitest.config.*"))
+    package_text = _package_text(snapshot)
+    uses_vitest = vitest_config or '"vitest"' in package_text
+    uses_jest = jest_config or "jest" in package_text or any("jest" in _read(path).lower() for path in snapshot.test_files)
 
     for path in snapshot.test_files:
         text = _read(path)
         supertest_hits += text.count("supertest")
 
-    if test_dir_hits and supertest_hits:
+    if test_dir_hits and uses_vitest:
+        inferred = "vitest_test_layout"
+        ambiguity = 0.1
+    elif test_dir_hits and supertest_hits and uses_jest:
         inferred = "jest_supertest_layout"
         ambiguity = 0.1
-    elif test_dir_hits and jest_config:
+    elif test_dir_hits and uses_jest:
         inferred = "jest_test_layout"
         ambiguity = 0.2
     elif test_dir_hits:
@@ -333,6 +397,7 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
         f"Test files detected: {test_dir_hits}.",
         f"supertest mentions detected: {supertest_hits}.",
         f"Jest config present: {'yes' if jest_config else 'no'}.",
+        f"Vitest detected: {'yes' if uses_vitest else 'no'}.",
     ]
     return _build_assessment(
         repo=repo,
@@ -341,7 +406,7 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
         evidence=evidence,
         parser_match_rate=_ratio(test_dir_hits + supertest_hits, max(len(snapshot.code_files), 1)),
         structural_match_rate=_ratio(test_dir_hits, max(len(snapshot.code_files), 1)),
-        independent_detector_agreement=0.86 if inferred in {"jest_supertest_layout", "jest_test_layout"} else 0.4,
+        independent_detector_agreement=0.86 if inferred in {"jest_supertest_layout", "jest_test_layout", "vitest_test_layout"} else 0.4,
         test_evidence_rate=_ratio(supertest_hits + test_dir_hits, max(test_dir_hits + 1, 1)),
         ambiguity_rate=ambiguity,
         conflicts=[],
@@ -408,6 +473,10 @@ def _extract_imports(text: str) -> List[str]:
     for match in IMPORT_PATTERN.findall(text):
         imports.extend([item for item in match if item])
     return imports
+
+
+def _package_text(snapshot: RepoSnapshot) -> str:
+    return json.dumps(snapshot.package_data).lower()
 
 
 def _dir_count(paths: Iterable[Path], name: str) -> int:
