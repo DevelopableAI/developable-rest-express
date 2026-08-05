@@ -90,19 +90,23 @@ def _detect_route_declaration_style(repo: RepoHandle, snapshot: RepoSnapshot) ->
     feature_router_files = sum(
         "router" in path.stem.lower()
         and "routes" not in {part.lower() for part in path.relative_to(snapshot.root).parts}
-        and "api" in {part.lower() for part in path.relative_to(snapshot.root).parts}
+        and bool({"api", "modules", "features"} & {part.lower() for part in path.relative_to(snapshot.root).parts})
         for path in snapshot.code_files
     )
+    resource_router_files = sum("resource-router-middleware" in _read(path) for path in snapshot.code_files)
 
     if decorator_hits or "routing-controllers" in _package_text(snapshot):
         inferred = "decorator_routing"
         ambiguity = 0.08 if decorator_hits else 0.25
+    elif resource_router_files or "resource-router-middleware" in _package_text(snapshot):
+        inferred = "resource_router_modules"
+        ambiguity = 0.12 if resource_router_files else 0.3
     elif feature_router_files:
         inferred = "feature_router_modules"
         ambiguity = 0.12
-    elif router_files > 0 and app_route_hits == 0:
+    elif router_files > 0 and (app_route_hits == 0 or router_route_hits >= app_route_hits * 2):
         inferred = "express_router_modules"
-        ambiguity = 0.1 if router_route_hits else 0.05
+        ambiguity = 0.15 if app_route_hits else (0.1 if router_route_hits else 0.05)
     elif app_route_hits > 0 and router_files == 0:
         inferred = "inline_app_routes"
         ambiguity = 0.1
@@ -118,6 +122,7 @@ def _detect_route_declaration_style(repo: RepoHandle, snapshot: RepoSnapshot) ->
     route_evidence.append(f"Detected {router_route_hits} router-level route call sites in route candidates.")
     route_evidence.append(f"Detected {decorator_hits} controller decorators.")
     route_evidence.append(f"Detected {feature_router_files} feature router files.")
+    route_evidence.append(f"Detected {resource_router_files} resource-router module files.")
     return _build_assessment(
         repo=repo,
         convention_name="route_declaration_style",

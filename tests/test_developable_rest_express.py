@@ -232,6 +232,15 @@ reference_repos:
         }
         self.assertEqual(jest_assessments["test_layout_shape"].inferred_value, "jest_test_layout")
 
+        resource_root = FIXTURES_ROOT / "repos" / "resource_router"
+        resource_assessments = {
+            assessment.convention_name: assessment
+            for assessment in analyze_express_repo(
+                RepoHandle(repo_id="resource-router", source=str(resource_root), source_kind="local_path", role="reference", local_path=str(resource_root), framework="express", language="javascript")
+            )
+        }
+        self.assertEqual(resource_assessments["route_declaration_style"].inferred_value, "resource_router_modules")
+
     def test_benchmark_evaluation_and_reports(self) -> None:
         benchmark_path = FIXTURES_ROOT / "benchmarks" / "local_benchmark.yaml"
         fixture = load_benchmark(benchmark_path)
