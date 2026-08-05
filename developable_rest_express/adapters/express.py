@@ -387,15 +387,23 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
     package_text = _package_text(snapshot)
     uses_vitest = vitest_config or '"vitest"' in package_text
     uses_jest = jest_config or "jest" in package_text or any("jest" in _read(path).lower() for path in snapshot.test_files)
+    uses_mocha = '"mocha"' in package_text
 
     for path in snapshot.test_files:
         text = _read(path)
         supertest_hits += text.count("supertest")
+    supertest_hits += int(test_dir_hits > 0 and '"supertest"' in package_text)
 
     if test_dir_hits and uses_vitest:
         inferred = "vitest_test_layout"
         ambiguity = 0.1
-    elif test_dir_hits and supertest_hits and uses_jest:
+    elif test_dir_hits and uses_mocha and supertest_hits:
+        inferred = "mocha_supertest_layout"
+        ambiguity = 0.1
+    elif test_dir_hits and uses_mocha:
+        inferred = "mocha_test_layout"
+        ambiguity = 0.15
+    elif test_dir_hits and supertest_hits:
         inferred = "jest_supertest_layout"
         ambiguity = 0.1
     elif test_dir_hits and uses_jest:
@@ -413,6 +421,7 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
         f"supertest mentions detected: {supertest_hits}.",
         f"Jest config present: {'yes' if jest_config else 'no'}.",
         f"Vitest detected: {'yes' if uses_vitest else 'no'}.",
+        f"Mocha detected: {'yes' if uses_mocha else 'no'}.",
     ]
     return _build_assessment(
         repo=repo,
@@ -421,7 +430,7 @@ def _detect_test_layout(repo: RepoHandle, snapshot: RepoSnapshot) -> ConventionA
         evidence=evidence,
         parser_match_rate=_ratio(test_dir_hits + supertest_hits, max(len(snapshot.code_files), 1)),
         structural_match_rate=_ratio(test_dir_hits, max(len(snapshot.code_files), 1)),
-        independent_detector_agreement=0.86 if inferred in {"jest_supertest_layout", "jest_test_layout", "vitest_test_layout"} else 0.4,
+        independent_detector_agreement=0.86 if inferred in {"jest_supertest_layout", "jest_test_layout", "vitest_test_layout", "mocha_supertest_layout", "mocha_test_layout"} else 0.4,
         test_evidence_rate=_ratio(supertest_hits + test_dir_hits, max(test_dir_hits + 1, 1)),
         ambiguity_rate=ambiguity,
         conflicts=[],

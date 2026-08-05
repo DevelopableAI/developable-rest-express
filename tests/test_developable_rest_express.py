@@ -242,6 +242,10 @@ reference_repos:
         self.assertEqual(resource_assessments["route_declaration_style"].inferred_value, "resource_router_modules")
         self.assertEqual(resource_assessments["service_repository_layering"].inferred_value, "flat_handlers")
 
+        mocha_root = FIXTURES_ROOT / "repos" / "mocha_supertest"
+        mocha_assessments = {assessment.convention_name: assessment for assessment in analyze_express_repo(RepoHandle(repo_id="mocha-supertest", source=str(mocha_root), source_kind="local_path", role="reference", local_path=str(mocha_root), framework="express", language="javascript"))}
+        self.assertEqual(mocha_assessments["test_layout_shape"].inferred_value, "mocha_supertest_layout")
+
     def test_benchmark_evaluation_and_reports(self) -> None:
         benchmark_path = FIXTURES_ROOT / "benchmarks" / "local_benchmark.yaml"
         fixture = load_benchmark(benchmark_path)
