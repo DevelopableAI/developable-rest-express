@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from developable_rest_express.analysis import analyze_profile
 from developable_rest_express.adapters.express import analyze_express_repo
 from developable_rest_express.benchmark_loader import load_benchmark
+from developable_rest_express.calibration import run_repository_grouped_logistic_experiment
 from developable_rest_express.evaluation import evaluate_benchmark
 from developable_rest_express.governance import load_governance, validate_benchmark_review
 from developable_rest_express.models import BenchmarkFixture, BenchmarkReview, RepoHandle, RepoReference
@@ -242,6 +243,24 @@ reference_repos:
         self.assertEqual(resource_assessments["route_declaration_style"].inferred_value, "resource_router_modules")
         self.assertEqual(resource_assessments["service_repository_layering"].inferred_value, "flat_handlers")
 
+        repository_only_root = FIXTURES_ROOT / "repos" / "route_repository_only"
+        repository_only_assessments = {
+            assessment.convention_name: assessment
+            for assessment in analyze_express_repo(
+                RepoHandle(repo_id="route-repository-only", source=str(repository_only_root), source_kind="local_path", role="reference", local_path=str(repository_only_root), framework="express", language="typescript")
+            )
+        }
+        self.assertEqual(repository_only_assessments["service_repository_layering"].inferred_value, "repository_only")
+
+        flat_data_root = FIXTURES_ROOT / "repos" / "route_flat_data_access"
+        flat_data_assessments = {
+            assessment.convention_name: assessment
+            for assessment in analyze_express_repo(
+                RepoHandle(repo_id="route-flat-data-access", source=str(flat_data_root), source_kind="local_path", role="reference", local_path=str(flat_data_root), framework="express", language="typescript")
+            )
+        }
+        self.assertEqual(flat_data_assessments["service_repository_layering"].inferred_value, "flat_handlers")
+
         mocha_root = FIXTURES_ROOT / "repos" / "mocha_supertest"
         mocha_assessments = {assessment.convention_name: assessment for assessment in analyze_express_repo(RepoHandle(repo_id="mocha-supertest", source=str(mocha_root), source_kind="local_path", role="reference", local_path=str(mocha_root), framework="express", language="javascript"))}
         self.assertEqual(mocha_assessments["test_layout_shape"].inferred_value, "mocha_supertest_layout")
@@ -272,6 +291,29 @@ reference_repos:
         self.assertIn("Public Benchmark Summary Table", evaluation_md)
         self.assertIn("Repo Provenance", evaluation_md)
         self.assertIn('"requested_revision"', evaluation_json)
+
+    def test_repository_grouped_logistic_calibration_experiment(self) -> None:
+        rows = [
+            {
+                "repo_id": f"repo-{repo_index}",
+                "matched": matched,
+                "confidence": confidence,
+                "parser_match_rate": confidence,
+                "structural_match_rate": confidence,
+                "independent_detector_agreement": confidence,
+                "test_evidence_rate": 0.5,
+                "ambiguity_rate": 1.0 - confidence,
+                "signal_strength": confidence,
+            }
+            for repo_index in range(4)
+            for matched, confidence in ((True, 0.9), (False, 0.2))
+        ]
+        result = run_repository_grouped_logistic_experiment(rows, iterations=200)
+        self.assertEqual(result["row_count"], 8)
+        self.assertEqual(result["repository_count"], 4)
+        self.assertEqual(result["validation"], "leave-one-repository-out")
+        self.assertIn("heuristic_brier_score", result)
+        self.assertIn("logistic_brier_score", result)
 
     def test_local_revision_must_match_the_requested_commit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

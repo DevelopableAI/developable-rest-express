@@ -7,7 +7,7 @@ review:
   reviewer: adityaarchunananand
   review_mode: bootstrap_self_review
   reviewed_at: 2026-08-05
-  rationale: Initial labels and expansion batches 01 and 02 were inspected against pinned public source snapshots.
+  rationale: Initial labels and expansion batches 01 through 03 were inspected against pinned public source snapshots.
 
 repos:
   - repo_id: node-express-boilerplate
@@ -88,6 +88,30 @@ repos:
   - repo_id: jaimin1618-nodejs-backend
     source: https://github.com/jaimin1618/nodejs-backend.git
     revision: 1038a49084a5e0d176a41079c7d2bc1340fd22c6
+  - repo_id: phlexplexico-g5api
+    source: https://github.com/PhlexPlexico/G5API.git
+    revision: f1ffa1014a1f801de908fad7e535d65a120f3840
+  - repo_id: alexleboucher-docker-express-postgres-boilerplate
+    source: https://github.com/alexleboucher/docker-express-postgres-boilerplate.git
+    revision: 422d3e659814e468cb0d1cd8389e5ca34f03e22a
+  - repo_id: cham11ng-typescript-api-starter
+    source: https://github.com/cham11ng/typescript-api-starter.git
+    revision: eff4828c39732dcca4b1a359b1db6c79523ce8e9
+  - repo_id: h3nrzi-shop-flow-expressjs-shopping-api
+    source: https://github.com/h3nrzi/shop-flow-expressjs-shopping-api.git
+    revision: e9f9b59269171d44a4acac0adc4c07bf29b1ceb7
+  - repo_id: shaisolaris-node-multitenant-api
+    source: https://github.com/Shaisolaris/node-multitenant-api.git
+    revision: 48c014e36d5d4bc90e41e2864dc53d19381e7df8
+  - repo_id: masb0ymas-express-api-sequelize
+    source: https://github.com/masb0ymas/express-api-sequelize.git
+    revision: d5c3182be5b07774a65935b38700011f54beba1f
+  - repo_id: gonzaloplaza-express-ts-ddd
+    source: https://github.com/gonzaloplaza/express-ts-ddd.git
+    revision: 0de3752d9c5bce62691bcd5fbd721cd02df9603b
+  - repo_id: steve-lebleu-typeplate
+    source: https://github.com/steve-lebleu/typeplate.git
+    revision: a5b106f546a8a9b30e32481da590a9add4e7b304
 
 expected_conventions:
   node-express-boilerplate:
@@ -272,9 +296,66 @@ expected_conventions:
     service_repository_layering: controller_model
     auth_middleware_presence: auth_middleware_unclear
     test_layout_shape: no_clear_tests
+  phlexplexico-g5api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  alexleboucher-docker-express-postgres-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  cham11ng-typescript-api-starter:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  h3nrzi-shop-flow-expressjs-shopping-api:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  shaisolaris-node-multitenant-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  masb0ymas-express-api-sequelize:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  gonzaloplaza-express-ts-ddd:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  steve-lebleu-typeplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_supertest_layout
 
 notes:
   - All sources satisfy the public corpus policy and are pinned to full Git commit SHAs; the committed V1 sources happened to be MIT-licensed.
   - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.
   - Expansion batch 01 was reviewed against the recorded SHA-pinned checkouts on 2026-08-05; direct ORM access corrected three layering labels.
   - Expansion batch 02 added ten policy-compliant repositories after SHA-pinned source inspection on 2026-08-05; it intentionally includes unsupported direct-data-access and handler-layer patterns.
+  - Expansion batch 03 added eight policy-compliant repositories after SHA-pinned source inspection on 2026-08-05; it brings the calibration corpus to 34 repositories and 204 convention rows.

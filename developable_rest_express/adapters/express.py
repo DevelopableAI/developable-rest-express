@@ -250,6 +250,8 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
     manager_to_model = 0
     controller_to_model = 0
     service_to_model = 0
+    route_to_repository = 0
+    route_direct_data_access = 0
 
     for path in snapshot.code_files:
         imports = _extract_imports(_read(path))
@@ -264,6 +266,12 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
             service_to_model += sum("model" in item.lower() for item in imports)
         if {"manager", "managers"} & lower_parts:
             manager_to_model += sum("model" in item.lower() for item in imports)
+        if path in snapshot.route_files:
+            route_to_repository += sum("repo" in item.lower() or "repository" in item.lower() for item in imports)
+            route_direct_data_access += sum(
+                any(marker in item.lower() for marker in ("/db", "database", "model", "prisma", "drizzle", "redis", "client"))
+                for item in imports
+            )
 
     feature_service_files = sum(
         bool({"api", "modules", "features"} & {part.lower() for part in path.relative_to(snapshot.root).parts})
@@ -274,6 +282,12 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
     if application_dir and ports_dir and infrastructure_dir:
         inferred = "clean_architecture_ports"
         ambiguity = 0.12
+    elif route_to_repository and not controllers_dir:
+        inferred = "repository_only"
+        ambiguity = 0.18
+    elif route_direct_data_access and not controllers_dir:
+        inferred = "flat_handlers"
+        ambiguity = 0.2
     elif controllers_dir and services_dir and repositories_dir and controller_to_service and service_to_repo:
         inferred = "controller_service_repository"
         ambiguity = 0.08
@@ -319,6 +333,8 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
         f"Manager->model imports: {manager_to_model}.",
         f"Controller->model imports: {controller_to_model}.",
         f"Service->model imports: {service_to_model}.",
+        f"Route->repository imports: {route_to_repository}.",
+        f"Route direct-data-access imports: {route_direct_data_access}.",
         f"Feature service files detected: {feature_service_files}.",
     ]
     return _build_assessment(
@@ -326,12 +342,12 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
         convention_name="service_repository_layering",
         inferred_value=inferred,
         evidence=evidence,
-        parser_match_rate=_ratio(controller_to_service + service_to_repo + controller_to_repo, max(len(snapshot.code_files), 1) * 2),
+        parser_match_rate=_ratio(controller_to_service + service_to_repo + controller_to_repo + route_to_repository + route_direct_data_access, max(len(snapshot.code_files), 1) * 2),
         structural_match_rate=_ratio(controllers_dir + services_dir + repositories_dir + managers_dir + models_dir, 3),
         independent_detector_agreement=0.92 if inferred in {"controller_service_repository", "controller_service_model", "controller_manager_model"} else 0.7 if inferred != "layering_unclear" else 0.5,
         test_evidence_rate=_test_signal(snapshot),
         ambiguity_rate=ambiguity,
-        conflicts=["Controller layer bypasses services and reaches repositories directly."] if inferred == "controller_repository" else [],
+        conflicts=["Controller layer bypasses services and reaches repositories directly."] if inferred == "controller_repository" else (["Route handlers access repositories directly."] if inferred == "repository_only" else (["Route handlers access data utilities directly."] if inferred == "flat_handlers" and route_direct_data_access else [])),
         supported=inferred != "layering_unclear",
         ambiguous=inferred == "layering_unclear",
     )

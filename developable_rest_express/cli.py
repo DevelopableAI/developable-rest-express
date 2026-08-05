@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .analysis import analyze_profile
 from .benchmark_loader import load_benchmark
+from .calibration import load_calibration_rows, render_calibration_experiment_markdown, run_repository_grouped_logistic_experiment
 from .evaluation import evaluate_benchmark, export_calibration_rows
 from .models import ConventionEvidence, DetectorMetrics, OutputFormat
 from .profile_loader import load_profile
@@ -63,6 +64,13 @@ def build_parser() -> argparse.ArgumentParser:
     calibration_parser.add_argument("path", type=Path)
     calibration_parser.add_argument("--cache-root", type=Path, default=None)
     calibration_parser.add_argument("--output-path", type=Path, required=True)
+
+    experiment_parser = subparsers.add_parser(
+        "run-calibration-experiment",
+        help="Run a repository-grouped regularized logistic calibration feasibility experiment.",
+    )
+    experiment_parser.add_argument("path", type=Path)
+    experiment_parser.add_argument("--output", choices=["json", "md", "both"], default="both")
 
     subparsers.add_parser(
         "score-demo",
@@ -135,6 +143,16 @@ def run_export_calibration_dataset(path: Path, cache_root: Path | None, output_p
     return 0
 
 
+def run_calibration_experiment(path: Path, output: OutputFormat) -> int:
+    import json
+
+    result = run_repository_grouped_logistic_experiment(load_calibration_rows(path))
+    json_payload = json.dumps(result, indent=2)
+    markdown_payload = render_calibration_experiment_markdown(result)
+    print(render_output_bundle(json_payload, markdown_payload, output))
+    return 0
+
+
 def run_score_demo() -> int:
     evidence = ConventionEvidence(
         convention_name="service_repository_layering",
@@ -186,6 +204,8 @@ def main() -> int:
         return run_evaluate_benchmark(args.path, args.cache_root, args.output)
     if args.command == "export-calibration-dataset":
         return run_export_calibration_dataset(args.path, args.cache_root, args.output_path)
+    if args.command == "run-calibration-experiment":
+        return run_calibration_experiment(args.path, args.output)
     if args.command == "score-demo":
         return run_score_demo()
 
