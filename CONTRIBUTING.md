@@ -4,14 +4,15 @@
 
 Benchmarks are manually labeled, versioned source snapshots. They measure convention inference; they are not training data and must never be generated from the analyzer's own output.
 
-Choose repositories that are public, Express-based, readable, reasonably sized, and permissively licensed. Do not add a source checkout to this repository. Fixtures store only source URLs, immutable commit SHAs, labels, and reports.
+Choose repositories under the [public corpus policy](docs/benchmarks/public-corpus-policy.md): public, Express-based, readable, reasonably sized, and permissively licensed under its SPDX allowlist. Do not add a source checkout to this repository. Fixtures store only source URLs, immutable commit SHAs, labels, and reports.
 
-1. Inspect a candidate repository at a specific commit.
-2. Add its full 40-character SHA to the profile and benchmark fixture.
-3. Label each supported convention from source inspection.
-4. Run `developable-rest-express prepare-benchmark <fixture>` and confirm requested and resolved revisions match.
-5. Run `developable-rest-express evaluate-benchmark <fixture> --output both` and review every mismatch.
-6. Update the fixture review metadata and submit the change for review.
+1. Create the required candidate record: license, canonical source, full SHA, scope, verification evidence, and diversity rationale.
+2. Inspect the candidate repository at that specific commit.
+3. Add its full 40-character SHA to the profile and benchmark fixture.
+4. Label each supported convention from source inspection.
+5. Run `developable-rest-express prepare-benchmark <fixture>` and confirm requested and resolved revisions match.
+6. Run `developable-rest-express evaluate-benchmark <fixture> --output both` and review every mismatch.
+7. Update the fixture review metadata and submit the change for review.
 
 Never point a public benchmark at a branch or a mutable tag. Updating a benchmark means deliberately replacing a SHA in a reviewed change; the harness never refreshes pins automatically.
 

@@ -7,7 +7,7 @@ review:
   reviewer: adityaarchunananand
   review_mode: bootstrap_self_review
   reviewed_at: 2026-08-05
-  rationale: Initial labels and expansion batch 01 were inspected against pinned public source snapshots.
+  rationale: Initial labels and expansion batches 01 and 02 were inspected against pinned public source snapshots.
 
 repos:
   - repo_id: node-express-boilerplate
@@ -58,6 +58,36 @@ repos:
   - repo_id: sidhantpanda-docker-express-typescript-boilerplate
     source: https://github.com/sidhantpanda/docker-express-typescript-boilerplate.git
     revision: 4c7c5863c5e16799c9f59dd11032e1e58658b4fb
+  - repo_id: afteracademy-nodejs-backend-architecture-typescript
+    source: https://github.com/afteracademy/nodejs-backend-architecture-typescript.git
+    revision: 9a49d09c77d9c58772cb724f4c4fa144a66b68d4
+  - repo_id: betterstack-node-redis-backend
+    source: https://github.com/betterstack-community/node-redis-backend.git
+    revision: ab89f44f109ea8b4f859b3379978827031a5a6ff
+  - repo_id: jdzm-supabase-express-api
+    source: https://github.com/JDIZM/supabase-express-api.git
+    revision: bd4369e69a84e5321a069db169ee746eb72150e5
+  - repo_id: ckdnd99-node-express-drizzle-api
+    source: https://github.com/ckdnd99/node-express-drizzle-api.git
+    revision: c74b517053f7b079f7b288b7c3c5741100f52836
+  - repo_id: q00-api-server-boilerplate
+    source: https://github.com/Q00/api_server_boilerplate.git
+    revision: 80f18f59d07fb5a52fc51e33e1ef89d0ae38afe5
+  - repo_id: davidrodarte-prisma-express-template
+    source: https://github.com/DavidRodarte/Prisma-Express-Template.git
+    revision: 3c05b98befd2419021c4acabf4dd8ca8f2606fa4
+  - repo_id: levelopers-ecommerce-nodejs
+    source: https://github.com/levelopers/Ecommerce-Nodejs.git
+    revision: 0c3ba844b4d4ff5a4a64109050dd906b6334a532
+  - repo_id: bhimrazy-express-blog-api
+    source: https://github.com/bhimrazy/express-blog-api.git
+    revision: 30464a263a21b85cadfa095e09fe16444e610357
+  - repo_id: esron-systranca-server
+    source: https://github.com/esron/systranca-server.git
+    revision: f891722a678e8d60a0f16279066e3d05e95d02df
+  - repo_id: jaimin1618-nodejs-backend
+    source: https://github.com/jaimin1618/nodejs-backend.git
+    revision: 1038a49084a5e0d176a41079c7d2bc1340fd22c6
 
 expected_conventions:
   node-express-boilerplate:
@@ -172,8 +202,79 @@ expected_conventions:
     service_repository_layering: controller_model
     auth_middleware_presence: auth_middleware_unclear
     test_layout_shape: jest_supertest_layout
+  afteracademy-nodejs-backend-architecture-typescript:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: repository_only
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  betterstack-node-redis-backend:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+  jdzm-supabase-express-api:
+    route_declaration_style: inline_app_routes
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  ckdnd99-node-express-drizzle-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+  q00-api-server-boilerplate:
+    route_declaration_style: decorator_routing
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  davidrodarte-prisma-express-template:
+    route_declaration_style: decorator_routing
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  levelopers-ecommerce-nodejs:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  bhimrazy-express-blog-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_test_layout
+  esron-systranca-server:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  jaimin1618-nodejs-backend:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
 
 notes:
-  - All sources are public MIT-licensed repositories pinned to full Git commit SHAs.
+  - All sources satisfy the public corpus policy and are pinned to full Git commit SHAs; the committed V1 sources happened to be MIT-licensed.
   - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.
   - Expansion batch 01 was reviewed against the recorded SHA-pinned checkouts on 2026-08-05; direct ORM access corrected three layering labels.
+  - Expansion batch 02 added ten policy-compliant repositories after SHA-pinned source inspection on 2026-08-05; it intentionally includes unsupported direct-data-access and handler-layer patterns.

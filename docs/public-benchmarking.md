@@ -20,7 +20,7 @@ Each benchmark also records the label author, reviewer, review mode, date, and r
 
 ## Candidate public repos
 
-The initial checked-in corpus uses these pinned, MIT-licensed repositories:
+The [public corpus policy](benchmarks/public-corpus-policy.md) defines repository eligibility, license allowlist, admission evidence, balance, and change control. The initial checked-in corpus uses these pinned, MIT-licensed repositories (MIT is one permitted license; the policy is not MIT-only):
 
 - [hagopj13/node-express-boilerplate](https://github.com/hagopj13/node-express-boilerplate)
 - [OsamaShahid/node-express-typeorm-boilerplate](https://github.com/OsamaShahid/node-express-typeorm-boilerplate)
@@ -29,13 +29,7 @@ The initial checked-in corpus uses these pinned, MIT-licensed repositories:
 - [edwinhern/express-typescript](https://github.com/edwinhern/express-typescript)
 - [kunalkapadia/express-mongoose-es6-rest-api](https://github.com/kunalkapadia/express-mongoose-es6-rest-api)
 
-These are starting points only. Before using any repo in the benchmark, verify that:
-
-- it is still public and accessible
-- it is actually Express-based
-- it is not a giant monorepo
-- it has a readable project layout
-- it is not mostly a toy CRUD sample
+These are starting points only. Before using any repo in the benchmark, apply the full public corpus policy, including its source-license, application-scope, SHA-pinning, and human-label review requirements.
 
 ## What to label manually
 

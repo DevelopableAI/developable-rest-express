@@ -1,6 +1,6 @@
 # Public Express expansion — batch 01
 
-This is a pinned candidate queue for expanding the benchmark beyond its six-repository V1 corpus. Each repository was checked on 2026-08-04: it is public, non-archived, non-fork, MIT-licensed, and its root `package.json` declares `express`.
+This is a pinned candidate queue for expanding the benchmark beyond its six-repository V1 corpus. Each repository was checked on 2026-08-04: it is public, non-archived, non-fork, MIT-licensed, and its root `package.json` declares `express`. It is governed by the [public corpus policy](public-corpus-policy.md).
 
 These candidates are **not** benchmark truth yet. Before adding one to `benchmarks/public/express_v1.yaml`, inspect the pinned checkout and have all six convention labels manually reviewed.
 
