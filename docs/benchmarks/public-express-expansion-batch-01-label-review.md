@@ -5,7 +5,7 @@ These labels were approved on 2026-08-05 after inspection of the SHA-pinned chec
 | Repo | Route style | Route boundary | Validation | Layering | Auth | Test layout |
 | --- | --- | --- | --- | --- | --- | --- |
 | danielfsousa | `express_router_modules` | `routes_call_controllers` | `route_validation_middleware` | `controller_model` | `auth_middleware_present` | `mocha_supertest_layout` |
-| mkosir | `express_router_modules` | `routes_call_controllers` | `route_validation_middleware` | `controller_repository` | `auth_middleware_present` | `mocha_test_layout` |
+| mkosir | `express_router_modules` | `routes_call_controllers` | `route_validation_middleware` | `controller_repository` | `auth_middleware_present` | `mocha_supertest_layout` |
 | gothinkster | `express_router_modules` `review` | `routes_call_controllers` | `controller_validation` `review` | `controller_service_model` | `auth_middleware_present` | `jest_test_layout` |
 | developit | `resource_router_modules` `review` | `routes_call_services` `review` | `no_clear_validation` | `flat_handlers` `review` | `auth_middleware_unclear` | `no_clear_tests` |
 | satishbabariya | `express_router_modules` | `routes_call_services` | `route_validation_middleware` | `service_data_access` `review` | `auth_middleware_present` | `no_clear_tests` |

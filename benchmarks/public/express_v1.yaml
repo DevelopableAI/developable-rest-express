@@ -101,7 +101,7 @@ expected_conventions:
     validation_at_edge_pattern: route_validation_middleware
     service_repository_layering: controller_model
     auth_middleware_presence: auth_middleware_present
-    test_layout_shape: jest_supertest_layout
+    test_layout_shape: mocha_supertest_layout
   danielfsousa-express-rest-boilerplate:
     route_declaration_style: express_router_modules
     route_controller_boundary: routes_call_controllers
@@ -115,7 +115,7 @@ expected_conventions:
     validation_at_edge_pattern: route_validation_middleware
     service_repository_layering: controller_repository
     auth_middleware_presence: auth_middleware_present
-    test_layout_shape: mocha_test_layout
+    test_layout_shape: mocha_supertest_layout
   gothinkster-node-express-prisma-v1-official-app:
     route_declaration_style: express_router_modules
     route_controller_boundary: routes_call_controllers
