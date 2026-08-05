@@ -240,6 +240,7 @@ reference_repos:
             )
         }
         self.assertEqual(resource_assessments["route_declaration_style"].inferred_value, "resource_router_modules")
+        self.assertEqual(resource_assessments["service_repository_layering"].inferred_value, "flat_handlers")
 
     def test_benchmark_evaluation_and_reports(self) -> None:
         benchmark_path = FIXTURES_ROOT / "benchmarks" / "local_benchmark.yaml"

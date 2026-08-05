@@ -238,6 +238,9 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
     repositories_dir = _dir_count(snapshot.code_files, "repositories") + _dir_count(snapshot.code_files, "repos")
     managers_dir = _dir_count(snapshot.code_files, "manager") + _dir_count(snapshot.code_files, "managers")
     models_dir = _dir_count(snapshot.code_files, "models") + _dir_count(snapshot.code_files, "model")
+    application_dir = _dir_count(snapshot.code_files, "application")
+    ports_dir = _dir_count(snapshot.code_files, "ports")
+    infrastructure_dir = _dir_count(snapshot.code_files, "infrastructure")
     controllers_dir += sum("controller" in path.stem.lower() for path in snapshot.code_files)
     models_dir += sum("model" in path.stem.lower() for path in snapshot.code_files)
     controller_to_service = 0
@@ -263,12 +266,15 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
             manager_to_model += sum("model" in item.lower() for item in imports)
 
     feature_service_files = sum(
-        "api" in {part.lower() for part in path.relative_to(snapshot.root).parts}
+        bool({"api", "modules", "features"} & {part.lower() for part in path.relative_to(snapshot.root).parts})
         and "service" in path.stem.lower()
         for path in snapshot.code_files
     )
 
-    if controllers_dir and services_dir and repositories_dir and controller_to_service and service_to_repo:
+    if application_dir and ports_dir and infrastructure_dir:
+        inferred = "clean_architecture_ports"
+        ambiguity = 0.12
+    elif controllers_dir and services_dir and repositories_dir and controller_to_service and service_to_repo:
         inferred = "controller_service_repository"
         ambiguity = 0.08
     elif controllers_dir and services_dir and models_dir and controller_to_service and service_to_model:
@@ -289,6 +295,9 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
     elif feature_service_files:
         inferred = "feature_service_layer"
         ambiguity = 0.25
+    elif "resource-router-middleware" in _package_text(snapshot):
+        inferred = "flat_handlers"
+        ambiguity = 0.25
     elif _dir_count(snapshot.code_files, "handlers"):
         inferred = "flat_handlers"
         ambiguity = 0.45
@@ -302,6 +311,7 @@ def _detect_service_repository_layering(repo: RepoHandle, snapshot: RepoSnapshot
         f"Repository directories detected: {repositories_dir}.",
         f"Manager directories detected: {managers_dir}.",
         f"Model directories detected: {models_dir}.",
+        f"Application/ports/infrastructure directories: {application_dir}/{ports_dir}/{infrastructure_dir}.",
         f"Controller->service imports: {controller_to_service}.",
         f"Service->repository imports: {service_to_repo}.",
         f"Controller->repository imports: {controller_to_repo}.",
