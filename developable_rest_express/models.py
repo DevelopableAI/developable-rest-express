@@ -173,6 +173,7 @@ class ConventionAssessment(BaseModel):
     convention_name: ConventionTarget
     inferred_value: str
     signal_strength: float = Field(ge=0.0, le=1.0)
+    detector_metrics: DetectorMetrics
     confidence: float = Field(ge=0.0, le=1.0)
     bucket: ConfidenceBucket
     source_type: SourceType

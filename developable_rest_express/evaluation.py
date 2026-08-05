@@ -7,6 +7,46 @@ from .models import BenchmarkFixture, ComparisonResult, EvaluationResult
 from .workspace import prepare_benchmark
 
 
+def export_calibration_rows(
+    fixture: BenchmarkFixture,
+    fixture_path: Path,
+    cache_root: Path | None = None,
+) -> list[dict[str, object]]:
+    """Return one training-ready row per pinned repo and convention."""
+    rows: list[dict[str, object]] = []
+    for repo in prepare_benchmark(fixture, fixture_path, cache_root=cache_root):
+        assessments = analyze_express_repo(repo) if repo.framework == "express" else []
+        by_name = {assessment.convention_name: assessment for assessment in assessments}
+        expected = fixture.expected_conventions[repo.repo_id]
+        for convention_name in expected.model_dump().keys():
+            assessment = by_name.get(convention_name)
+            metrics = assessment.detector_metrics if assessment else None
+            inferred = assessment.inferred_value if assessment else "unsupported"
+            rows.append(
+                {
+                    "benchmark_id": fixture.benchmark_id,
+                    "repo_id": repo.repo_id,
+                    "source": repo.source,
+                    "commit_sha": repo.commit_sha,
+                    "convention_name": convention_name,
+                    "expected_value": getattr(expected, convention_name),
+                    "inferred_value": inferred,
+                    "matched": inferred == getattr(expected, convention_name),
+                    "confidence": assessment.confidence if assessment else 0.0,
+                    "bucket": assessment.bucket if assessment else "do_not_operationalize",
+                    "signal_strength": assessment.signal_strength if assessment else 0.0,
+                    "supported": assessment.supported if assessment else False,
+                    "ambiguous": assessment.ambiguous if assessment else True,
+                    "parser_match_rate": metrics.parser_match_rate if metrics else 0.0,
+                    "structural_match_rate": metrics.structural_match_rate if metrics else 0.0,
+                    "independent_detector_agreement": metrics.independent_detector_agreement if metrics else 0.0,
+                    "test_evidence_rate": metrics.test_evidence_rate if metrics else 0.0,
+                    "ambiguity_rate": metrics.ambiguity_rate if metrics else 1.0,
+                }
+            )
+    return rows
+
+
 def evaluate_benchmark(
     fixture: BenchmarkFixture,
     fixture_path: Path,

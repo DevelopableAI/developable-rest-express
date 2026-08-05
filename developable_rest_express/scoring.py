@@ -72,6 +72,7 @@ def assess_convention(evidence: ConventionEvidence) -> ConventionAssessment:
         convention_name=evidence.convention_name,
         inferred_value=evidence.inferred_value,
         signal_strength=signal_strength,
+        detector_metrics=evidence.detector_metrics,
         confidence=confidence,
         bucket=bucket_confidence(confidence),
         source_type=evidence.source_type,

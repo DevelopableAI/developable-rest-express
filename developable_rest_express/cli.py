@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .analysis import analyze_profile
 from .benchmark_loader import load_benchmark
-from .evaluation import evaluate_benchmark
+from .evaluation import evaluate_benchmark, export_calibration_rows
 from .models import ConventionEvidence, DetectorMetrics, OutputFormat
 from .profile_loader import load_profile
 from .reporting import (
@@ -58,6 +58,11 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_parser.add_argument("path", type=Path)
     evaluate_parser.add_argument("--cache-root", type=Path, default=None)
     evaluate_parser.add_argument("--output", choices=["json", "md", "both"], default="both")
+
+    calibration_parser = subparsers.add_parser("export-calibration-dataset", help="Export JSONL rows for scorer calibration.")
+    calibration_parser.add_argument("path", type=Path)
+    calibration_parser.add_argument("--cache-root", type=Path, default=None)
+    calibration_parser.add_argument("--output-path", type=Path, required=True)
 
     subparsers.add_parser(
         "score-demo",
@@ -120,6 +125,16 @@ def run_evaluate_benchmark(path: Path, cache_root: Path | None, output: OutputFo
     return 0
 
 
+def run_export_calibration_dataset(path: Path, cache_root: Path | None, output_path: Path) -> int:
+    import json
+
+    rows = export_calibration_rows(load_benchmark(path), path, cache_root=cache_root)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+    print(json.dumps({"rows": len(rows), "output_path": str(output_path)}))
+    return 0
+
+
 def run_score_demo() -> int:
     evidence = ConventionEvidence(
         convention_name="service_repository_layering",
@@ -169,6 +184,8 @@ def main() -> int:
         return run_analyze_profile(args.path, args.cache_root, args.output)
     if args.command == "evaluate-benchmark":
         return run_evaluate_benchmark(args.path, args.cache_root, args.output)
+    if args.command == "export-calibration-dataset":
+        return run_export_calibration_dataset(args.path, args.cache_root, args.output_path)
     if args.command == "score-demo":
         return run_score_demo()
 
