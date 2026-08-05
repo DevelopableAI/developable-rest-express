@@ -106,14 +106,14 @@ expected_conventions:
     route_declaration_style: express_router_modules
     route_controller_boundary: routes_call_controllers
     validation_at_edge_pattern: route_validation_middleware
-    service_repository_layering: controller_service_model
+    service_repository_layering: controller_model
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: mocha_supertest_layout
   mkosir-typeorm-express-typescript:
     route_declaration_style: express_router_modules
     route_controller_boundary: routes_call_controllers
     validation_at_edge_pattern: route_validation_middleware
-    service_repository_layering: controller_service_repository
+    service_repository_layering: controller_repository
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: mocha_test_layout
   gothinkster-node-express-prisma-v1-official-app:
@@ -162,7 +162,7 @@ expected_conventions:
     route_declaration_style: express_router_modules
     route_controller_boundary: routes_call_controllers
     validation_at_edge_pattern: route_validation_middleware
-    service_repository_layering: controller_service_repository
+    service_repository_layering: controller_repository
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: jest_test_layout
   sidhantpanda-docker-express-typescript-boilerplate:
@@ -176,4 +176,4 @@ expected_conventions:
 notes:
   - All sources are public MIT-licensed repositories pinned to full Git commit SHAs.
   - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.
-  - Expansion batch 01 was reviewed against the recorded SHA-pinned checkouts on 2026-08-05.
+  - Expansion batch 01 was reviewed against the recorded SHA-pinned checkouts on 2026-08-05; direct ORM access corrected three layering labels.
