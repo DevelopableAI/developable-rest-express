@@ -6,8 +6,8 @@ review:
   author: adityaarchunananand
   reviewer: adityaarchunananand
   review_mode: bootstrap_self_review
-  reviewed_at: 2026-08-04
-  rationale: Initial solo-maintainer labels were inspected against pinned public source snapshots.
+  reviewed_at: 2026-08-05
+  rationale: Initial labels and expansion batch 01 were inspected against pinned public source snapshots.
 
 repos:
   - repo_id: node-express-boilerplate
@@ -28,6 +28,36 @@ repos:
   - repo_id: express-mongoose-es6-rest-api
     source: https://github.com/kunalkapadia/express-mongoose-es6-rest-api.git
     revision: 247fedde56e380fae720ce65ff65a7d0b034b3e2
+  - repo_id: danielfsousa-express-rest-boilerplate
+    source: https://github.com/danielfsousa/express-rest-boilerplate.git
+    revision: b8bed6d7cfce3cf2ef89ec1b5e47b52dfc50e874
+  - repo_id: mkosir-typeorm-express-typescript
+    source: https://github.com/mkosir/typeorm-express-typescript.git
+    revision: 117f6647c5aabf97b5d40af060106230a103c714
+  - repo_id: gothinkster-node-express-prisma-v1-official-app
+    source: https://github.com/gothinkster/node-express-prisma-v1-official-app.git
+    revision: 6ac99ea5aeadc4e001dd4d6933c2e269f878a969
+  - repo_id: developit-express-es6-rest-api
+    source: https://github.com/developit/express-es6-rest-api.git
+    revision: 9b8c005a38a0de820eac7e319e81b4318c320630
+  - repo_id: satishbabariya-nodejs-boilerplate
+    source: https://github.com/satishbabariya/nodejs-boilerplate.git
+    revision: d49fce2ba412232813945e594d07d22f7a603dd9
+  - repo_id: watscho-express-mongodb-rest-api-boilerplate
+    source: https://github.com/watscho/express-mongodb-rest-api-boilerplate.git
+    revision: 889fd1679326e9e2124ada1d67f59abb297dc0ed
+  - repo_id: mzubair481-express-boilerplate
+    source: https://github.com/mzubair481/express-boilerplate.git
+    revision: b43318dc59fb8c7f3b47eac870e54d5226349143
+  - repo_id: ascii-16-expressjs-typescript-prisma-boilerplate
+    source: https://github.com/ascii-16/expressjs-typescript-prisma-boilerplate.git
+    revision: c27ad6522d8221f5ce35662a1b854b6a9f612530
+  - repo_id: Louis3797-express-ts-auth-service
+    source: https://github.com/Louis3797/express-ts-auth-service.git
+    revision: fc6722badf8b43c02adba9de7e11bb342c09a6f1
+  - repo_id: sidhantpanda-docker-express-typescript-boilerplate
+    source: https://github.com/sidhantpanda/docker-express-typescript-boilerplate.git
+    revision: 4c7c5863c5e16799c9f59dd11032e1e58658b4fb
 
 expected_conventions:
   node-express-boilerplate:
@@ -72,7 +102,78 @@ expected_conventions:
     service_repository_layering: controller_model
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: jest_supertest_layout
+  danielfsousa-express-rest-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_supertest_layout
+  mkosir-typeorm-express-typescript:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_test_layout
+  gothinkster-node-express-prisma-v1-official-app:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  developit-express-es6-rest-api:
+    route_declaration_style: resource_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+  satishbabariya-nodejs-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  watscho-express-mongodb-rest-api-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  mzubair481-express-boilerplate:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  ascii-16-expressjs-typescript-prisma-boilerplate:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: feature_service_layer
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  Louis3797-express-ts-auth-service:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  sidhantpanda-docker-express-typescript-boilerplate:
+    route_declaration_style: inline_app_routes
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: jest_supertest_layout
 
 notes:
   - All sources are public MIT-licensed repositories pinned to full Git commit SHAs.
   - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.
+  - Expansion batch 01 was reviewed against the recorded SHA-pinned checkouts on 2026-08-05.
