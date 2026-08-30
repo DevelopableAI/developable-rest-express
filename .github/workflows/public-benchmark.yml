@@ -21,6 +21,15 @@ jobs:
       - run: mkdir -p benchmark-reports
       - run: developable-rest-express prepare-benchmark benchmarks/public/express_v1.yaml --cache-root .developable-rest-express/cache/repos
       - run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Export calibration dataset from the current detectors
+        run: |
+          developable-rest-express export-calibration-dataset benchmarks/public/express_v1.yaml \
+            --cache-root .developable-rest-express/cache/repos \
+            --output-path benchmark-reports/express_v1.actual.jsonl
+      - name: Assert detector output matches the committed calibration baseline
+        run: |
+          diff <(sort benchmarks/public/calibration/express_v1.jsonl) \
+               <(sort benchmark-reports/express_v1.actual.jsonl)
       - run: developable-rest-express evaluate-benchmark benchmarks/public/express_v1.yaml --cache-root .developable-rest-express/cache/repos --output json > benchmark-reports/express_v1.json
       - run: developable-rest-express evaluate-benchmark benchmarks/public/express_v1.yaml --cache-root .developable-rest-express/cache/repos --output md > benchmark-reports/express_v1.md
       - uses: actions/upload-artifact@v4

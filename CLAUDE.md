@@ -27,11 +27,14 @@ The credibility claim rests on one rule: **benchmark labels are human-authored f
 python3 -m venv .venv && source .venv/bin/activate
 python -m pip install -e .
 
-# Full offline suite (17 tests; the public-benchmark test skips by default)
+# Full offline suite (19 tests; the public-benchmark test skips by default)
 python -m unittest discover -s tests -p 'test_*.py' -v
 
 # One test
 python -m unittest tests.test_developable_rest_express.DevelopableRestExpressTests.test_benchmark_evaluation_and_reports
+
+# Regenerate the detector golden — only when an accuracy change is intended
+DEVELOPABLE_REGENERATE_DETECTOR_GOLDEN=1 python -m unittest tests.test_detector_characterization
 
 # Opt-in: clones 34 external repos, slow
 DEVELOPABLE_RUN_PUBLIC_BENCHMARK=1 python -m unittest discover -s tests -p 'test_public_benchmark.py' -v
@@ -60,7 +63,7 @@ Five stages, each isolated in its own module. Data crosses stage boundaries only
 | --- | --- | --- |
 | Load | `profile_loader.py`, `benchmark_loader.py`, `governance.py` | YAML → validated model; benchmark loading also enforces label-review policy |
 | Materialize | `workspace.py` | Resolve local paths, clone/cache GitHub repos at an exact SHA, verify provenance, fingerprint framework/language |
-| Detect | `adapters/express.py` | Six deterministic detectors emitting structured evidence, never conclusions-only |
+| Detect | `adapters/express/` | Six `Detector` subclasses, one per file; `snapshot.py` owns every filesystem read |
 | Score | `scoring.py` | The only place weights and thresholds live |
 | Report | `reporting.py`, `evaluation.py`, `calibration.py` | JSON/Markdown rendering, label comparison, offline calibration experiment |
 
@@ -81,18 +84,23 @@ cli.main()
                       -> fingerprint_repo()                  -> (framework, language)
                       -> resolve_commit_sha()                -> RepoHandle
        -> adapters.express.analyze_express_repo(handle)      # skipped unless framework == "express"
-            -> RepoSnapshot(root)                            # single walk: code_files, test_files, route_files, package.json
-            -> _detect_route_declaration_style()      \
-               _detect_route_controller_boundary()     |
-               _detect_validation_at_edge()            |-- six detectors, each ->
-               _detect_service_repository_layering()   |
-               _detect_auth_middleware()               |
-               _detect_test_layout()                  /
-                 -> _build_assessment()                      -> ConventionEvidence
-                      -> scoring.assess_convention()
-                           -> compute_signal_strength()
-                           -> compute_confidence()
-                           -> bucket_confidence()            -> ConventionAssessment
+            -> RepoSnapshot(root)                            # one walk; caches file text, imports, package roots
+            -> for detector in DETECTORS:                    # six subclasses, declaration order
+                 detector.assess(repo, snapshot)             # base.Detector template method
+                   -> detector.detect(snapshot)
+                        -> _gather(snapshot)                 -> <Name>Signals  (frozen dataclass)
+                        -> _classify(signals)                -> Classification
+                           or first_match(RULES, signals, fallback)
+                        -> _metrics(...)                     -> DetectorMetrics
+                        -> _evidence(signals)                -> tuple[str, ...]
+                                                             -> DetectorFinding
+                   -> Detector._build_evidence()             -> ConventionEvidence
+                        # base owns repo_quality, coverage, conflict_penalty,
+                        # and the supported / ambiguous flags
+                   -> scoring.assess_convention()
+                        -> compute_signal_strength()
+                        -> compute_confidence()
+                        -> bucket_confidence()               -> ConventionAssessment
        -> RepoAnalysis per repo                              -> AnalysisReport
   -> reporting.render_analysis_json() / render_analysis_markdown()
   -> reporting.render_output_bundle()                        -> stdout
@@ -124,7 +132,7 @@ Two offshoots reuse the same spine: `export-calibration-dataset` runs `evaluatio
 - **SHA pinning is absolute.** Benchmark GitHub repos require a full 40-character lowercase SHA (`RepoReference.finalize`). If a resolved `HEAD` differs from the request, `prepare_repo_reference` raises rather than proceeding. Never point a benchmark at a branch or tag; never auto-refresh a pin.
 - **Governance gates labels.** `benchmark-governance.yaml` is currently `bootstrap_self_review` with a single maintainer, so author and reviewer may match. Switching to `peer_review` requires distinct author/reviewer, both in the maintainer list. Fixture `review.review_mode` must equal the governance mode.
 - **Confidence is heuristic, not calibrated.** `agreement` is fed by the detector *and* contributes to `signal_strength`, so scores double-count by design (`docs/scoring.md`). Buckets: `>=0.85` high, `>=0.65` medium, `>=0.40` low, else `do_not_operationalize`. Changing weights or thresholds invalidates the committed baseline — rerun the benchmark and record the delta.
-- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new detector registered in `analyze_express_repo`, every one of the 34 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
+- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new `Detector` subclass file registered in `adapters/express/__init__.py::DETECTORS`, every one of the 34 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, the golden in `tests/fixtures/golden/`, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
 - **Corpus admission has a written policy.** `docs/benchmarks/public-corpus-policy.md` — public, non-fork, non-archived Express *application*, one of five allowed SPDX licenses, SHA-pinned, with a diversity rationale. No third-party source checkouts are committed.
 
 ## Current progress
@@ -136,11 +144,38 @@ Read `docs/benchmarks/` for state; it is the running log.
 - Strongest: `auth_middleware_presence` and `test_layout_shape` (0.94 each).
 - Next planned step: batch 04 corpus expansion — 30 scouted candidates await label review in `public-express-expansion-batch-04-scouting.md`. Those SHAs are scout pins, not benchmark truth.
 
+
+## Express adapter conventions
+
+The adapter was refactored from a single 550-line module into `adapters/express/`. Follow its shape when touching it.
+
+**Import direction is one-way and load-bearing.**
+
+```
+__init__.py  ->  <detector>.py  ->  base.py
+                 <detector>.py  ->  snapshot.py  ->  base.py
+```
+
+A detector must never import from `__init__.py`, and `base.py` must never import `snapshot` at runtime -- `snapshot` needs `ratio` from `base`, so the `if TYPE_CHECKING:` guard around `from .snapshot import RepoSnapshot` is required, not stylistic. Use relative imports; an absolute `from developable_rest_express.adapters.express import X` hides the direction. Detectors do not import each other; a small duplicated helper is preferred over cross-detector coupling.
+
+**Detector anatomy.** Each subclass declares `convention_name` and `unsupported_values`, and implements `detect()` returning a `DetectorFinding` assembled from four private helpers: `_gather` (signals), `_classify` or `first_match` (conclusion), `_metrics`, `_evidence`. The base owns `repo_quality`, `coverage`, `conflict_penalty`, and the `supported` / `ambiguous` flags -- never set those in a subclass. Conflicts go in the `Classification`; the base derives the penalty.
+
+`ambiguous_values` defaults to `unsupported_values`. Only `route_declaration` overrides it: `mixed_routes` is supported *and* ambiguous.
+
+**Rule tables vs conditionals.** `test_layout`, `route_declaration`, and `service_repository_layering` use an ordered `Rule` table resolved by `first_match`; the three shorter detectors use plain `if`/`elif`. Both expose the same `Classification`-returning shape. Where a branch's ambiguity depends on signals, split it into narrower rules rather than teaching `Rule` about callables. Where a conflict depends on a signal the guard does not test (`flat_handlers`), apply it after matching with `dataclasses.replace`.
+
+**Two notions of relative path.** `RepoSnapshot.directory_count()` measures from each file's nearest ancestor `package.json`; `RepoSnapshot.relative_parts()` measures from the snapshot root. They agree only while no corpus repo is a monorepo. Do not unify them.
+
+**Value objects use stdlib `dataclasses`, frozen.** Pydantic models belong in `models.py`, where they cross stage boundaries. A one-element `conflicts` tuple needs its trailing comma.
+
+**Verification.** `tests/test_detector_characterization.py` pins all 54 fixture assessments to `tests/fixtures/golden/express_assessments.json`. Regenerate it only when an accuracy change is intended, never to make a failing assertion pass. `.github/workflows/public-benchmark.yml` re-exports the calibration dataset and diffs it against the committed 204-row `benchmarks/public/calibration/express_v1.jsonl` -- that is the corpus-wide guard.
+
 ## Known deviations from the working agreement
 
-Written by the previous toolchain; treat as debt to pay down when touching the area, not as precedent.
+Written by the previous toolchain; treat as debt to pay down when touching the area, not as precedent. The Express adapter's entries were cleared by the decomposition refactor; these are what remain.
 
-- `adapters/express.py` is 550 lines of module-level functions with one class (`RepoSnapshot`). The six detectors are near-duplicates of each other and each ends in a long-signature `_build_assessment` call. This is the prime candidate for an OOP refactor: a `Detector` base with a small evidence-returning method per subclass.
-- `_detect_service_repository_layering` is a ~90-line function with a fourteen-branch `if/elif` chain — the opposite of the straight control flow required above.
-- `RepoSnapshot` caches file *lists* but not file *contents*; `_read()` re-reads every file from disk once per detector, and `_dir_count()` calls `_infer_repo_root()` (which stats the filesystem) once per path per call.
+- `evaluation.py::evaluate_benchmark` is a 93-line function that prepares repos, compares against labels, aggregates four different metrics, and builds the result. It is the clearest remaining candidate for the same treatment the adapter got.
+- `reporting.py::render_evaluation_markdown` is 79 lines of sequential `lines.extend` blocks; `render_analysis_markdown` is 41. Both are line-buffer accumulation rather than composed section renderers.
 - `cli.py` uses function-local `import json` in four handlers and dispatches through a flat `if` chain in `main()`.
+- `workspace.py::prepare_repo_reference` takes 5 parameters and runs 51 lines; `_prepare_github_repo` takes 4. The module is otherwise plain functions over one exception class.
+- `calibration.py` is deliberately stdlib-only maths; its 5-parameter `_fit_regularized_logistic` is inherent to the algorithm and is not worth restructuring.
