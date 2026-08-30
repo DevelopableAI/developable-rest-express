@@ -108,7 +108,6 @@ class ConventionProfile(BaseModel):
     safety_policy: SafetyPolicy = Field(default_factory=SafetyPolicy)
     output_targets: List[str] = Field(default_factory=list)
     evaluation_set: List[RepoReference] = Field(default_factory=list)
-    expected_framework: Optional[Literal["express"]] = None
 
     @model_validator(mode="after")
     def validate_profile(self) -> "ConventionProfile":
@@ -193,7 +192,6 @@ class RepoAnalysis(BaseModel):
 class AnalysisReport(BaseModel):
     profile_id: str
     library: Literal["developable-rest-express"]
-    expected_framework: Optional[Literal["express"]] = None
     repos: List[RepoHandle]
     repo_reports: List[RepoAnalysis]
     summary: Dict[str, Any] = Field(default_factory=dict)

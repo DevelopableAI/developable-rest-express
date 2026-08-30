@@ -15,7 +15,6 @@ def render_analysis_markdown(report: AnalysisReport) -> str:
         f"# Analysis Report: {report.profile_id}",
         "",
         f"- Library: `{report.library}`",
-        f"- Expected framework: `{report.expected_framework or 'unspecified'}`",
         f"- Total repos: `{report.summary.get('total_repos', 0)}`",
         f"- Unsupported repos: `{report.summary.get('unsupported_repos', 0)}`",
         "",

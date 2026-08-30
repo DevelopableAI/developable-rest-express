@@ -7,14 +7,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This repository was previously maintained with Codex. The following constraints are set by the maintainer and override default behaviour.
 
 1. **Propose, do not apply.** Discuss the change first, then hand over the code so the maintainer applies it manually. Do not edit source files unless explicitly asked to.
-2. **Object-oriented, SOLID, YAGNI.** New functionality belongs in cohesive classes with one reason to change. Do not add abstraction for hypothetical future frameworks — the roadmap names NestJS/FastAPI/Spring, but only build the seam when a second adapter is actually being written.
-3. **No long parameter lists.** Pass a value object instead. `adapters/express.py::_build_assessment` (11 keyword-only parameters) is the anti-pattern to avoid, not to copy.
+2. **Object-oriented, SOLID, YAGNI.** New functionality belongs in cohesive classes with one reason to change. Do not add abstraction for hypothetical future frameworks: Express is the permanent, exclusive scope, so there is no second adapter to design for. Build a seam only when a second consumer actually exists.
+3. **No long parameter lists.** Pass a value object instead. The removed `_build_assessment` (11 keyword-only parameters) is the anti-pattern; `detectors/*.py` now pass a frozen `<Name>Signals` dataclass and no function in the package exceeds 4 parameters.
 4. **Google-style docstrings; comments are a smell.** If a mid-function comment feels necessary, extract the block into a named method instead. Do not write filler prose, restate the signature, or annotate obvious lines.
 5. **Straight control flow.** A reader should follow one path from CLI entry to rendered report. Avoid layered indirection, callback chains, and deep conditional nesting.
 
 ## What this project is
 
 A **Python** library and CLI that statically analyzes **Express/Node.js** repositories and infers their engineering conventions with an explicit confidence score. Express is the subject of analysis, not the implementation language — there is no JavaScript source in this repo outside `tests/fixtures/repos/`.
+
+**Express is the permanent, exclusive scope.** Not other Node frameworks, not other languages. A NestJS or FastAPI harness would be a separate library with its own corpus, labels, and baseline — never an adapter registered here. The eventual output is MCP servers and assistive agents for developing on Express.
 
 V1 deliberately stops at *evidence → heuristic score → benchmark report*. MCP config, skill, and guidance emission are future work and are not authorized until benchmark accuracy is consistently useful (`docs/benchmarks/public-express-v1-baseline.md`).
 
@@ -63,7 +65,7 @@ Five stages, each isolated in its own module. Data crosses stage boundaries only
 | --- | --- | --- |
 | Load | `profile_loader.py`, `benchmark_loader.py`, `governance.py` | YAML → validated model; benchmark loading also enforces label-review policy |
 | Materialize | `workspace.py` | Resolve local paths, clone/cache GitHub repos at an exact SHA, verify provenance, fingerprint framework/language |
-| Detect | `adapters/express/` | Six `Detector` subclasses, one per file; `snapshot.py` owns every filesystem read |
+| Detect | `detectors/` | Six `Detector` subclasses, one per file; `snapshot.py` owns every filesystem read |
 | Score | `scoring.py` | The only place weights and thresholds live |
 | Report | `reporting.py`, `evaluation.py`, `calibration.py` | JSON/Markdown rendering, label comparison, offline calibration experiment |
 
@@ -83,7 +85,7 @@ cli.main()
                       -> _cache_matches()                    # canonical origin + SHA provenance check
                       -> fingerprint_repo()                  -> (framework, language)
                       -> resolve_commit_sha()                -> RepoHandle
-       -> adapters.express.analyze_express_repo(handle)      # skipped unless framework == "express"
+       -> detectors.analyze_repo(handle)                     # skipped unless framework == "express"
             -> RepoSnapshot(root)                            # one walk; caches file text, imports, package roots
             -> for detector in DETECTORS:                    # six subclasses, declaration order
                  detector.assess(repo, snapshot)             # base.Detector template method
@@ -118,7 +120,7 @@ cli.main()
        -> governance.validate_benchmark_review()             # author/reviewer vs review_mode
   -> evaluation.evaluate_benchmark(fixture, path)
        -> workspace.prepare_benchmark()                      # require_remote_revision=True: GitHub repos MUST be SHA-pinned
-       -> adapters.express.analyze_express_repo()            # same detector path as Workflow 1
+       -> detectors.analyze_repo()                           # same detector path as Workflow 1
        -> compare each assessment to ConventionExpectation   -> ComparisonResult (matched / confidence / bucket)
        -> aggregate accuracy-by-convention, precision-by-bucket, false positives/negatives
                                                              -> EvaluationResult
@@ -132,7 +134,7 @@ Two offshoots reuse the same spine: `export-calibration-dataset` runs `evaluatio
 - **SHA pinning is absolute.** Benchmark GitHub repos require a full 40-character lowercase SHA (`RepoReference.finalize`). If a resolved `HEAD` differs from the request, `prepare_repo_reference` raises rather than proceeding. Never point a benchmark at a branch or tag; never auto-refresh a pin.
 - **Governance gates labels.** `benchmark-governance.yaml` is currently `bootstrap_self_review` with a single maintainer, so author and reviewer may match. Switching to `peer_review` requires distinct author/reviewer, both in the maintainer list. Fixture `review.review_mode` must equal the governance mode.
 - **Confidence is heuristic, not calibrated.** `agreement` is fed by the detector *and* contributes to `signal_strength`, so scores double-count by design (`docs/scoring.md`). Buckets: `>=0.85` high, `>=0.65` medium, `>=0.40` low, else `do_not_operationalize`. Changing weights or thresholds invalidates the committed baseline — rerun the benchmark and record the delta.
-- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new `Detector` subclass file registered in `adapters/express/__init__.py::DETECTORS`, every one of the 34 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, the golden in `tests/fixtures/golden/`, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
+- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new `Detector` subclass file registered in `detectors/__init__.py::DETECTORS`, every one of the 34 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, the golden in `tests/fixtures/golden/`, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
 - **Corpus admission has a written policy.** `docs/benchmarks/public-corpus-policy.md` — public, non-fork, non-archived Express *application*, one of five allowed SPDX licenses, SHA-pinned, with a diversity rationale. No third-party source checkouts are committed.
 
 ## Current progress
@@ -145,9 +147,9 @@ Read `docs/benchmarks/` for state; it is the running log.
 - Next planned step: batch 04 corpus expansion — 30 scouted candidates await label review in `public-express-expansion-batch-04-scouting.md`. Those SHAs are scout pins, not benchmark truth.
 
 
-## Express adapter conventions
+## Detector package conventions
 
-The adapter was refactored from a single 550-line module into `adapters/express/`. Follow its shape when touching it.
+The detectors were refactored from a single 550-line module into `detectors/`, then flattened out of `adapters/` when the Express-only scope was made explicit. Follow the resulting shape when touching them.
 
 **Import direction is one-way and load-bearing.**
 
@@ -156,7 +158,7 @@ __init__.py  ->  <detector>.py  ->  base.py
                  <detector>.py  ->  snapshot.py  ->  base.py
 ```
 
-A detector must never import from `__init__.py`, and `base.py` must never import `snapshot` at runtime -- `snapshot` needs `ratio` from `base`, so the `if TYPE_CHECKING:` guard around `from .snapshot import RepoSnapshot` is required, not stylistic. Use relative imports; an absolute `from developable_rest_express.adapters.express import X` hides the direction. Detectors do not import each other; a small duplicated helper is preferred over cross-detector coupling.
+A detector must never import from `__init__.py`, and `base.py` must never import `snapshot` at runtime -- `snapshot` needs `ratio` from `base`, so the `if TYPE_CHECKING:` guard around `from .snapshot import RepoSnapshot` is required, not stylistic. Use relative imports, and mind the depth: `detectors/` sits directly under the package root, so it is `from ..models import`, not `...`. An absolute `from developable_rest_express.detectors import X` hides the direction. Detectors do not import each other; a small duplicated helper is preferred over cross-detector coupling.
 
 **Detector anatomy.** Each subclass declares `convention_name` and `unsupported_values`, and implements `detect()` returning a `DetectorFinding` assembled from four private helpers: `_gather` (signals), `_classify` or `first_match` (conclusion), `_metrics`, `_evidence`. The base owns `repo_quality`, `coverage`, `conflict_penalty`, and the `supported` / `ambiguous` flags -- never set those in a subclass. Conflicts go in the `Classification`; the base derives the penalty.
 
@@ -172,9 +174,9 @@ A detector must never import from `__init__.py`, and `base.py` must never import
 
 ## Known deviations from the working agreement
 
-Written by the previous toolchain; treat as debt to pay down when touching the area, not as precedent. The Express adapter's entries were cleared by the decomposition refactor; these are what remain.
+Written by the previous toolchain; treat as debt to pay down when touching the area, not as precedent. The detector entries were cleared by the decomposition refactor; these are what remain.
 
-- `evaluation.py::evaluate_benchmark` is a 93-line function that prepares repos, compares against labels, aggregates four different metrics, and builds the result. It is the clearest remaining candidate for the same treatment the adapter got.
+- `evaluation.py::evaluate_benchmark` is a 93-line function that prepares repos, compares against labels, aggregates four different metrics, and builds the result. It is the clearest remaining candidate for the same treatment the detectors got, but note it has no characterization net — the golden covers detectors, not evaluation, so it would need its own step 0.
 - `reporting.py::render_evaluation_markdown` is 79 lines of sequential `lines.extend` blocks; `render_analysis_markdown` is 41. Both are line-buffer accumulation rather than composed section renderers.
 - `cli.py` uses function-local `import json` in four handlers and dispatches through a flat `if` chain in `main()`.
 - `workspace.py::prepare_repo_reference` takes 5 parameters and runs 51 lines; `_prepare_github_repo` takes 4. The module is otherwise plain functions over one exception class.

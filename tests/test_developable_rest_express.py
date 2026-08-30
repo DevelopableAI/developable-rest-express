@@ -9,7 +9,7 @@ import subprocess
 from pydantic import ValidationError
 
 from developable_rest_express.analysis import analyze_profile
-from developable_rest_express.adapters.express import analyze_express_repo
+from developable_rest_express.detectors import analyze_repo
 from developable_rest_express.benchmark_loader import load_benchmark
 from developable_rest_express.calibration import run_repository_grouped_logistic_experiment
 from developable_rest_express.evaluation import evaluate_benchmark
@@ -33,7 +33,6 @@ class DevelopableRestExpressTests(unittest.TestCase):
         profile = load_profile(FIXTURES_ROOT / "profiles" / "mixed_profile.yaml")
         self.assertEqual(profile.reference_repos[0].source_kind, "local_path")
         self.assertEqual(profile.reference_repos[1].source_kind, "github_url")
-        self.assertEqual(profile.expected_framework, "express")
 
     def test_invalid_profile_duplicate_repo_id(self) -> None:
         duplicate_profile = """
@@ -200,7 +199,7 @@ reference_repos:
         root = FIXTURES_ROOT / "repos" / "detector_regressions"
         assessments = {
             assessment.convention_name: assessment
-            for assessment in analyze_express_repo(
+            for assessment in analyze_repo(
                 RepoHandle(
                     repo_id="detector-regressions",
                     source=str(root),
@@ -219,7 +218,7 @@ reference_repos:
         jest_root = FIXTURES_ROOT / "repos" / "jest_non_supertest"
         jest_assessments = {
             assessment.convention_name: assessment
-            for assessment in analyze_express_repo(
+            for assessment in analyze_repo(
                 RepoHandle(
                     repo_id="jest-non-supertest",
                     source=str(jest_root),
@@ -236,7 +235,7 @@ reference_repos:
         resource_root = FIXTURES_ROOT / "repos" / "resource_router"
         resource_assessments = {
             assessment.convention_name: assessment
-            for assessment in analyze_express_repo(
+            for assessment in analyze_repo(
                 RepoHandle(repo_id="resource-router", source=str(resource_root), source_kind="local_path", role="reference", local_path=str(resource_root), framework="express", language="javascript")
             )
         }
@@ -246,7 +245,7 @@ reference_repos:
         repository_only_root = FIXTURES_ROOT / "repos" / "route_repository_only"
         repository_only_assessments = {
             assessment.convention_name: assessment
-            for assessment in analyze_express_repo(
+            for assessment in analyze_repo(
                 RepoHandle(repo_id="route-repository-only", source=str(repository_only_root), source_kind="local_path", role="reference", local_path=str(repository_only_root), framework="express", language="typescript")
             )
         }
@@ -255,14 +254,14 @@ reference_repos:
         flat_data_root = FIXTURES_ROOT / "repos" / "route_flat_data_access"
         flat_data_assessments = {
             assessment.convention_name: assessment
-            for assessment in analyze_express_repo(
+            for assessment in analyze_repo(
                 RepoHandle(repo_id="route-flat-data-access", source=str(flat_data_root), source_kind="local_path", role="reference", local_path=str(flat_data_root), framework="express", language="typescript")
             )
         }
         self.assertEqual(flat_data_assessments["service_repository_layering"].inferred_value, "flat_handlers")
 
         mocha_root = FIXTURES_ROOT / "repos" / "mocha_supertest"
-        mocha_assessments = {assessment.convention_name: assessment for assessment in analyze_express_repo(RepoHandle(repo_id="mocha-supertest", source=str(mocha_root), source_kind="local_path", role="reference", local_path=str(mocha_root), framework="express", language="javascript"))}
+        mocha_assessments = {assessment.convention_name: assessment for assessment in analyze_repo(RepoHandle(repo_id="mocha-supertest", source=str(mocha_root), source_kind="local_path", role="reference", local_path=str(mocha_root), framework="express", language="javascript"))}
         self.assertEqual(mocha_assessments["test_layout_shape"].inferred_value, "mocha_supertest_layout")
 
     def test_benchmark_evaluation_and_reports(self) -> None:

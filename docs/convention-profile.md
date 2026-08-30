@@ -10,10 +10,12 @@ Different teams often use different conventions even inside the same company. A 
 
 Profiles solve that by isolating convention learning.
 
+Every profile is an Express profile; they differ by which Express codebases they bound.
+
 Examples:
 - `public-express-v1`
-- `customer-platform-fastapi`
-- `partner-integrations-spring`
+- `customer-platform-express`
+- `partner-integrations-express`
 
 ## Repo categories
 

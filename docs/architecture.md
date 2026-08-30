@@ -2,7 +2,7 @@
 
 ## Core idea
 
-`developable-rest-express` is an evaluation-first harness for inferring conventions from bounded sets of Express REST repositories. It currently stops at evidence, heuristic scoring, and benchmark reports; MCP and skill emission remain future work.
+`developable-rest-express` is an evaluation-first harness for inferring conventions from bounded sets of Express REST repositories. Express is its permanent and exclusive scope. It currently stops at evidence, heuristic scoring, and benchmark reports; MCP and skill emission remain future work.
 
 The architecture should separate:
 
@@ -37,29 +37,24 @@ V1 responsibilities:
 - language/framework fingerprints
 - held-out evaluation manifests
 
-### 3. Adapter layer
+### 3. Detector layer
 
-Framework-aware logic lives here.
+All Express-aware logic lives in `developable_rest_express/detectors/`. There is no adapter
+indirection, because there will never be a second framework: another framework would be a separate
+library with its own corpus, labels, and baseline, not a plugin registered here.
 
-Expected first adapters:
-- Express + TypeScript
-- NestJS
-- FastAPI
-- Spring Boot
-
-Adapters should expose small deterministic capabilities rather than giant inference blobs.
-
-### 4. Detector layer
-
-Each detector should answer one narrow question, such as:
+`snapshot.py` owns every filesystem read and caches file text, imports, and package roots.
+`base.py` owns the `Detector` contract and all scoring plumbing. Each detector module answers one
+narrow question, such as:
 - how routes are declared
 - whether validation lives at the edge
 - how auth is propagated
 - whether repository access bypasses service layers
 
-Detectors should emit structured evidence instead of conclusions only.
+Detectors emit structured evidence rather than conclusions only, and never compute their own
+confidence: they return a finding, and `base.Detector` hands it to the scorer.
 
-V1 detectors are implemented only for Express repos and cover:
+The implemented detectors cover:
 - route declaration style
 - route/controller boundary
 - validation at the route edge
@@ -67,7 +62,7 @@ V1 detectors are implemented only for Express repos and cover:
 - auth middleware presence
 - test layout shape
 
-### 5. Scoring layer
+### 4. Scoring layer
 
 Consumes evidence and predicts confidence.
 
@@ -75,7 +70,7 @@ Important rule:
 - raw weights can start heuristic
 - production confidence should eventually be calibrated against benchmark truth
 
-### 6. Evaluation layer
+### 5. Evaluation layer
 
 This is what makes the project credible. Benchmark truth is manually authored and is never inferred from detector output.
 
@@ -88,13 +83,18 @@ Responsibilities:
 - reliability diagrams and calibration metrics
 - threshold tuning for operational buckets
 
-### 7. Emission layer
+### 6. Emission layer
 
-Generates the actual artifacts for AI tooling.
+Not built, and not authorized until benchmark accuracy is consistently useful.
 
-Possible outputs:
-- MCP config and tool manifests
-- skill instructions for Codex / Claude Code
+It will consume a scored `AnalysisReport` -- the same model `reporting.py` already renders -- and is
+therefore a second family of renderers rather than a new pipeline stage. Emission must be gated on
+confidence buckets so that only `high` and `medium` conventions can influence generated tooling and
+`low` stays explain-only.
+
+Intended outputs:
+- MCP server config and tool manifests
+- skill instructions for coding agents
 - repo guidance markdown
 - machine-readable convention reports
 
@@ -107,9 +107,9 @@ V1 currently supports:
 - JSON and Markdown reports with review and revision provenance
 - offline fixture tests plus opt-in public integration tests
 
-## Non-goals for V1
+## Non-goals
 
-- multi-framework code parsing
+- any framework other than Express, permanently
 - live MCP server generation
 - LLM orchestration
 - enterprise auth or hosted control planes

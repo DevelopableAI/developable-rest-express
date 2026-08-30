@@ -1,6 +1,7 @@
 # developable-rest-express
 
-`developable-rest-express` is the Express-specific library in the broader Developable harness family.
+`developable-rest-express` analyzes Express/Node.js REST services and nothing else. Express is the
+permanent, exclusive scope: not other Node frameworks, not other languages.
 
 Its job is not to magically understand any codebase. Its job is to ingest a bounded set of representative REST service repositories, infer high-value engineering conventions with explicit confidence, and emit portable AI development artifacts such as MCP-facing tool specs, skills, and repo guidance.
 
@@ -14,7 +15,7 @@ This project is intentionally opinionated:
 - deterministic analysis first, LLM assistance second
 - convention profiles instead of whole-company ingestion
 - confidence that is measurable and calibratable
-- architecture-specific libraries instead of one giant framework blob
+- one framework per library, never a plugin point for several
 
 ## Why a dedicated REST library?
 
@@ -59,7 +60,7 @@ V1 does not yet try to:
 - `developable_rest_express/profile_loader.py`: profile YAML loading and validation
 - `developable_rest_express/benchmark_loader.py`: benchmark YAML loading and validation
 - `developable_rest_express/workspace.py`: repo preparation, caching, and fingerprinting
-- `developable_rest_express/adapters/express.py`: Express-only deterministic detectors
+- `developable_rest_express/detectors/`: the six deterministic Express detectors, one per module
 - `developable_rest_express/analysis.py`: profile analysis pipeline
 - `developable_rest_express/evaluation.py`: benchmark evaluation pipeline
 - `developable_rest_express/reporting.py`: JSON and Markdown report rendering
@@ -136,7 +137,11 @@ See [docs/public-benchmarking.md](docs/public-benchmarking.md) for a step-by-ste
 ## Near-term roadmap
 
 1. Add richer benchmark fixtures and calibration datasets.
-2. Improve Express detectors and repo-level aggregation logic.
-3. Add framework adapters for NestJS, FastAPI, and Spring Boot.
-4. Learn/calibrate scoring weights from labeled repo data.
-5. Add emitters for MCP configs, skills, and repo-facing artifacts after benchmark quality is good enough.
+2. Improve Express detectors and repo-level aggregation logic, starting with the two weakest:
+   service/repository layering and the route/controller boundary.
+3. Learn/calibrate scoring weights from labeled repo data.
+4. Add emitters for MCP servers, skills, and repo-facing guidance once benchmark accuracy is
+   consistently useful.
+
+Adding other frameworks is not on the roadmap. A NestJS, FastAPI, or Spring Boot harness would be a
+separate library, not an adapter inside this one.

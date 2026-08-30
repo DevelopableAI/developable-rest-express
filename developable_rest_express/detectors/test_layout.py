@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import ClassVar
 
-from ...models import ConventionTarget, DetectorMetrics
+from ..models import ConventionTarget, DetectorMetrics
 from .base import Classification, Detector, DetectorFinding, Rule, first_match, ratio
 from .snapshot import RepoSnapshot
 

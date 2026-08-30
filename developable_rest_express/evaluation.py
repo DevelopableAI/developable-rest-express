@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .adapters.express import analyze_express_repo
+from .detectors import analyze_repo
 from .models import BenchmarkFixture, ComparisonResult, EvaluationResult
 from .workspace import prepare_benchmark
 
@@ -15,7 +15,7 @@ def export_calibration_rows(
     """Return one training-ready row per pinned repo and convention."""
     rows: list[dict[str, object]] = []
     for repo in prepare_benchmark(fixture, fixture_path, cache_root=cache_root):
-        assessments = analyze_express_repo(repo) if repo.framework == "express" else []
+        assessments = analyze_repo(repo) if repo.framework == "express" else []
         by_name = {assessment.convention_name: assessment for assessment in assessments}
         expected = fixture.expected_conventions[repo.repo_id]
         for convention_name in expected.model_dump().keys():
@@ -57,7 +57,7 @@ def evaluate_benchmark(
 
     for repo in repo_handles:
         expected = fixture.expected_conventions[repo.repo_id]
-        analyses = analyze_express_repo(repo) if repo.framework == "express" else []
+        analyses = analyze_repo(repo) if repo.framework == "express" else []
         by_name = {item.convention_name: item for item in analyses}
 
         for convention_name in expected.model_dump().keys():

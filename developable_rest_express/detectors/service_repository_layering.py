@@ -6,7 +6,7 @@ from collections import Counter
 from dataclasses import dataclass, replace
 from typing import ClassVar, Iterable, Sequence
 
-from ...models import ConventionTarget, DetectorMetrics
+from ..models import ConventionTarget, DetectorMetrics
 from .base import Classification, Detector, DetectorFinding, Rule, first_match, ratio
 from .snapshot import RepoSnapshot
 

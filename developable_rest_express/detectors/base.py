@@ -4,14 +4,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, ClassVar, Generic, Sequence, TypeVar
 
-from ...models import (
+from ..models import (
     ConventionAssessment,
     ConventionEvidence,
     ConventionTarget,
     DetectorMetrics,
     RepoHandle,
 )
-from ...scoring import assess_convention
+from ..scoring import assess_convention
 
 if TYPE_CHECKING:
     from .snapshot import RepoSnapshot

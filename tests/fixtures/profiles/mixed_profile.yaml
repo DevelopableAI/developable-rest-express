@@ -1,7 +1,6 @@
 profile_id: fixture-mixed-profile
 library: developable-rest-express
 purpose: Mixed local and GitHub inputs for preparation tests
-expected_framework: express
 
 reference_repos:
   - repo_id: layered-fixture

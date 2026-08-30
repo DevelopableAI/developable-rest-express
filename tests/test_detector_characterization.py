@@ -5,7 +5,7 @@ import os
 import unittest
 from pathlib import Path
 
-from developable_rest_express.adapters.express import analyze_express_repo
+from developable_rest_express.detectors import analyze_repo
 from developable_rest_express.models import RepoHandle
 from developable_rest_express.workspace import fingerprint_repo
 
@@ -57,7 +57,7 @@ def analyze_fixture_repos() -> dict[str, list[dict]]:
     return {
         repo_path.name: [
             assessment.model_dump(mode="json")
-            for assessment in analyze_express_repo(build_handle(repo_path))
+            for assessment in analyze_repo(build_handle(repo_path))
         ]
         for repo_path in fixture_repo_paths()
     }

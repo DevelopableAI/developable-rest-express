@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import List
 
-from ...models import ConventionAssessment, RepoHandle
+from ..models import ConventionAssessment, RepoHandle
 from .auth_middleware import AuthMiddlewareDetector
 from .base import Detector
 from .route_controller_boundary import RouteControllerBoundaryDetector
@@ -25,7 +25,7 @@ DETECTORS: tuple[Detector, ...] = (
 )
 
 
-def analyze_express_repo(repo: RepoHandle) -> List[ConventionAssessment]:
+def analyze_repo(repo: RepoHandle) -> List[ConventionAssessment]:
     """Assess every supported convention for one prepared Express repository.
 
     Args:

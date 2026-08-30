@@ -1,7 +1,6 @@
 profile_id: public-express-v1
 library: developable-rest-express
 purpose: Curated public Express services for convention inference and benchmark development
-expected_framework: express
 
 reference_repos:
   - repo_id: node-express-boilerplate

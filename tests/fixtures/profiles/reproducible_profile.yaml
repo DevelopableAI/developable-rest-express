@@ -1,7 +1,6 @@
 profile_id: reproducible-local-profile
 library: developable-rest-express
 purpose: Local fixture profile used by reproducibility tests
-expected_framework: express
 reference_repos:
   - repo_id: layered-reproducible
     source: ../repos/express_layered

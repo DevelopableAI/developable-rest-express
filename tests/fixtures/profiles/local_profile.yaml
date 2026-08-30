@@ -1,7 +1,6 @@
 profile_id: fixture-local-profile
 library: developable-rest-express
 purpose: Local fixture profile for analyzer tests
-expected_framework: express
 
 reference_repos:
   - repo_id: layered-fixture

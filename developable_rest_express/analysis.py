@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .adapters.express import analyze_express_repo
+from .detectors import analyze_repo
 from .models import AnalysisReport, ConventionProfile, RepoAnalysis
 from .workspace import prepare_profile
 
@@ -22,7 +22,7 @@ def analyze_profile(
             repo_reports.append(RepoAnalysis(repo=repo, conventions=[]))
             continue
 
-        repo_reports.append(RepoAnalysis(repo=repo, conventions=analyze_express_repo(repo)))
+        repo_reports.append(RepoAnalysis(repo=repo, conventions=analyze_repo(repo)))
 
     summary = {
         "total_repos": len(repo_handles),
@@ -35,7 +35,6 @@ def analyze_profile(
     return AnalysisReport(
         profile_id=profile.profile_id,
         library=profile.library,
-        expected_framework=profile.expected_framework,
         repos=repo_handles,
         repo_reports=repo_reports,
         summary=summary,
