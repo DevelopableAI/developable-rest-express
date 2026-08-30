@@ -24,3 +24,6 @@ benchmark-reports/
 .idea/
 .vscode/
 *.log
+
+# Local change plans (not tracked)
+changes/

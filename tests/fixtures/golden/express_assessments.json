@@ -1,0 +1,1650 @@
+{
+  "ambiguous_express": [
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": true,
+      "bucket": "medium",
+      "confidence": 0.6819,
+      "conflicts": [
+        "Repo mixes multiple route declaration styles."
+      ],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.5,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.375,
+        "structural_match_rate": 0.5,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Detected 1 router-oriented files.",
+        "Detected 1 app-level route call sites in route candidates.",
+        "Detected 1 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "mixed_routes",
+      "signal_strength": 0.4575,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": false,
+      "bucket": "low",
+      "confidence": 0.5306,
+      "conflicts": [
+        "Route layer bypasses controllers."
+      ],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.25,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.1667,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 1 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "routes_call_services",
+      "signal_strength": 0.2725,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5775,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.13,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5923,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.3333,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 1.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "layering_unclear",
+      "signal_strength": 0.1892,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5175,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.1,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "ambiguous_express"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5356,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.4,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Test files detected: 0.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "no_clear_tests",
+      "signal_strength": 0.1025,
+      "source_type": "deterministic",
+      "supported": false
+    }
+  ],
+  "detector_regressions": [
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8155,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.12,
+        "independent_detector_agreement": 0.9,
+        "parser_match_rate": 0.25,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Detected 0 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 1 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 1 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "feature_router_modules",
+      "signal_strength": 0.462,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8725,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.9,
+        "parser_match_rate": 0.3333,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Route files import controllers 1 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "routes_call_controllers",
+      "signal_strength": 0.69,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6112,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.205,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8622,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.12,
+        "independent_detector_agreement": 0.92,
+        "parser_match_rate": 0.1,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Controller directories detected: 2.",
+        "Service directories detected: 1.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 2.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 1.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 1.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "controller_service_model",
+      "signal_strength": 0.621,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5513,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.175,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "detector_regressions"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8065,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.86,
+        "parser_match_rate": 0.2,
+        "structural_match_rate": 0.2,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Test files detected: 1.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: yes.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "vitest_test_layout",
+      "signal_strength": 0.482,
+      "source_type": "deterministic",
+      "supported": true
+    }
+  ],
+  "express_inline": [
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.25,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Detected 0 router-oriented files.",
+        "Detected 1 app-level route call sites in route candidates.",
+        "Detected 0 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "inline_app_routes",
+      "signal_strength": 0.53,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8762,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.9,
+        "parser_match_rate": 0.3333,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route files import controllers 1 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "routes_call_controllers",
+      "signal_strength": 0.765,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.615,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.28,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6464,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.6667,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Controller directories detected: 2.",
+        "Service directories detected: 0.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "layering_unclear",
+      "signal_strength": 0.4058,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8997,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.15,
+        "independent_detector_agreement": 0.88,
+        "parser_match_rate": 1.0,
+        "structural_match_rate": 0.6667,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 1.",
+        "Route imports that look auth-related: 1.",
+        "Middleware directory signals: 1."
+      ],
+      "inferred_value": "auth_middleware_present",
+      "signal_strength": 0.8868,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_inline"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.854,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.86,
+        "parser_match_rate": 0.75,
+        "structural_match_rate": 0.25,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Test files detected: 1.",
+        "supertest mentions detected: 2.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "jest_supertest_layout",
+      "signal_strength": 0.732,
+      "source_type": "deterministic",
+      "supported": true
+    }
+  ],
+  "express_layered": [
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.9025,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.75,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Detected 1 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 2 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "express_router_modules",
+      "signal_strength": 0.88,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8912,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.9,
+        "parser_match_rate": 0.3333,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route files import controllers 1 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "routes_call_controllers",
+      "signal_strength": 0.765,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.9006,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.15,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.75,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route-level validation signals: 2.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 1."
+      ],
+      "inferred_value": "route_validation_middleware",
+      "signal_strength": 0.8725,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8857,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.08,
+        "independent_detector_agreement": 0.92,
+        "parser_match_rate": 0.1429,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Controller directories detected: 2.",
+        "Service directories detected: 1.",
+        "Repository directories detected: 1.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 1.",
+        "Service->repository imports: 1.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "controller_service_repository",
+      "signal_strength": 0.7149,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.9147,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.15,
+        "independent_detector_agreement": 0.88,
+        "parser_match_rate": 1.0,
+        "structural_match_rate": 0.6667,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 1.",
+        "Route imports that look auth-related: 1.",
+        "Middleware directory signals: 1."
+      ],
+      "inferred_value": "auth_middleware_present",
+      "signal_strength": 0.8868,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "express_layered"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8396,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.86,
+        "parser_match_rate": 0.4286,
+        "structural_match_rate": 0.1429,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Test files detected: 1.",
+        "supertest mentions detected: 2.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "jest_supertest_layout",
+      "signal_strength": 0.6142,
+      "source_type": "deterministic",
+      "supported": true
+    }
+  ],
+  "jest_non_supertest": [
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.4725,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.9,
+        "independent_detector_agreement": 0.2,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Detected 0 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 0 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "unsupported",
+      "signal_strength": 0.13,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6144,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "boundary_unclear",
+      "signal_strength": 0.2075,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5962,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.205,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5944,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 0.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "layering_unclear",
+      "signal_strength": 0.1975,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5363,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.175,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "jest_non_supertest"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.8877,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.2,
+        "independent_detector_agreement": 0.86,
+        "parser_match_rate": 1.0,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 0.5
+      },
+      "evidence": [
+        "Test files detected: 1.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "jest_test_layout",
+      "signal_strength": 0.867,
+      "source_type": "deterministic",
+      "supported": true
+    }
+  ],
+  "mocha_supertest": [
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.4912,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.9,
+        "independent_detector_agreement": 0.2,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Detected 0 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 0 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "unsupported",
+      "signal_strength": 0.205,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6331,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "boundary_unclear",
+      "signal_strength": 0.2825,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.615,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.28,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6131,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 0.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "layering_unclear",
+      "signal_strength": 0.2725,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.555,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.25,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "mocha_supertest"
+      ],
+      "ambiguous": false,
+      "bucket": "high",
+      "confidence": 0.9103,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.86,
+        "parser_match_rate": 1.0,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 1.0
+      },
+      "evidence": [
+        "Test files detected: 1.",
+        "supertest mentions detected: 2.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: yes."
+      ],
+      "inferred_value": "mocha_supertest_layout",
+      "signal_strength": 0.957,
+      "source_type": "deterministic",
+      "supported": true
+    }
+  ],
+  "resource_router": [
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.743,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.12,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Detected 0 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 0 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 1 resource-router module files."
+      ],
+      "inferred_value": "resource_router_modules",
+      "signal_strength": 0.302,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5956,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "boundary_unclear",
+      "signal_strength": 0.1325,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5775,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.13,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.6781,
+      "conflicts": [],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.25,
+        "independent_detector_agreement": 0.7,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 0.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "flat_handlers",
+      "signal_strength": 0.2525,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5175,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.1,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "resource_router"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5356,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.4,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Test files detected: 0.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "no_clear_tests",
+      "signal_strength": 0.1025,
+      "source_type": "deterministic",
+      "supported": false
+    }
+  ],
+  "route_flat_data_access": [
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8462,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.5,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Detected 1 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 1 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "express_router_modules",
+      "signal_strength": 0.655,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.6106,
+      "conflicts": [],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 0 times."
+      ],
+      "inferred_value": "boundary_unclear",
+      "signal_strength": 0.1325,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5925,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.13,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": false,
+      "bucket": "low",
+      "confidence": 0.6242,
+      "conflicts": [
+        "Route handlers access data utilities directly."
+      ],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.2,
+        "independent_detector_agreement": 0.7,
+        "parser_match_rate": 0.1667,
+        "structural_match_rate": 0.3333,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 1.",
+        "Repository directories detected: 0.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 0.",
+        "Route direct-data-access imports: 1.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "flat_handlers",
+      "signal_strength": 0.3767,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5325,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.1,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "route_flat_data_access"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5506,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.4,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Test files detected: 0.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "no_clear_tests",
+      "signal_strength": 0.1025,
+      "source_type": "deterministic",
+      "supported": false
+    }
+  ],
+  "route_repository_only": [
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": false,
+      "bucket": "medium",
+      "confidence": 0.8462,
+      "conflicts": [],
+      "convention_name": "route_declaration_style",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.1,
+        "independent_detector_agreement": 0.85,
+        "parser_match_rate": 0.5,
+        "structural_match_rate": 1.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Detected 1 router-oriented files.",
+        "Detected 0 app-level route call sites in route candidates.",
+        "Detected 1 router-level route call sites in route candidates.",
+        "Detected 0 controller decorators.",
+        "Detected 0 feature router files.",
+        "Detected 0 resource-router module files."
+      ],
+      "inferred_value": "express_router_modules",
+      "signal_strength": 0.655,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": false,
+      "bucket": "low",
+      "confidence": 0.5544,
+      "conflicts": [
+        "Route layer bypasses controllers."
+      ],
+      "convention_name": "route_controller_boundary",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.35,
+        "independent_detector_agreement": 0.55,
+        "parser_match_rate": 0.3333,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route files import controllers 0 times.",
+        "Route files import services 0 times.",
+        "Route files import repositories 1 times."
+      ],
+      "inferred_value": "routes_call_repositories",
+      "signal_strength": 0.3075,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5925,
+      "conflicts": [],
+      "convention_name": "validation_at_edge_pattern",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.5,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Route-level validation signals: 0.",
+        "Controller-level validation signals: 0.",
+        "Validator directory/file signals: 0."
+      ],
+      "inferred_value": "no_clear_validation",
+      "signal_strength": 0.13,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": false,
+      "bucket": "low",
+      "confidence": 0.6312,
+      "conflicts": [
+        "Route handlers access repositories directly."
+      ],
+      "convention_name": "service_repository_layering",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.18,
+        "independent_detector_agreement": 0.7,
+        "parser_match_rate": 0.25,
+        "structural_match_rate": 0.3333,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Controller directories detected: 0.",
+        "Service directories detected: 0.",
+        "Repository directories detected: 1.",
+        "Manager directories detected: 0.",
+        "Model directories detected: 0.",
+        "Application/ports/infrastructure directories: 0/0/0.",
+        "Controller->service imports: 0.",
+        "Service->repository imports: 0.",
+        "Controller->repository imports: 0.",
+        "Controller->manager imports: 0.",
+        "Manager->model imports: 0.",
+        "Controller->model imports: 0.",
+        "Service->model imports: 0.",
+        "Route->repository imports: 1.",
+        "Route direct-data-access imports: 0.",
+        "Feature service files detected: 0."
+      ],
+      "inferred_value": "repository_only",
+      "signal_strength": 0.4047,
+      "source_type": "deterministic",
+      "supported": true
+    },
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5325,
+      "conflicts": [],
+      "convention_name": "auth_middleware_presence",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.8,
+        "independent_detector_agreement": 0.35,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Auth-related file names detected: 0.",
+        "Route imports that look auth-related: 0.",
+        "Middleware directory signals: 0."
+      ],
+      "inferred_value": "auth_middleware_unclear",
+      "signal_strength": 0.1,
+      "source_type": "deterministic",
+      "supported": false
+    },
+    {
+      "affected_repos": [
+        "route_repository_only"
+      ],
+      "ambiguous": true,
+      "bucket": "low",
+      "confidence": 0.5506,
+      "conflicts": [],
+      "convention_name": "test_layout_shape",
+      "coverage": 1.0,
+      "detector_metrics": {
+        "ambiguity_rate": 0.85,
+        "independent_detector_agreement": 0.4,
+        "parser_match_rate": 0.0,
+        "structural_match_rate": 0.0,
+        "test_evidence_rate": 0.0
+      },
+      "evidence": [
+        "Test files detected: 0.",
+        "supertest mentions detected: 0.",
+        "Jest config present: no.",
+        "Vitest detected: no.",
+        "Mocha detected: no."
+      ],
+      "inferred_value": "no_clear_tests",
+      "signal_strength": 0.1025,
+      "source_type": "deterministic",
+      "supported": false
+    }
+  ]
+}
