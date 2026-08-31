@@ -132,19 +132,21 @@ Two offshoots reuse the same spine: `export-calibration-dataset` runs `evaluatio
 ## Domain rules that constrain changes
 
 - **SHA pinning is absolute.** Benchmark GitHub repos require a full 40-character lowercase SHA (`RepoReference.finalize`). If a resolved `HEAD` differs from the request, `prepare_repo_reference` raises rather than proceeding. Never point a benchmark at a branch or tag; never auto-refresh a pin.
+- **Pins survive upstream force-pushes.** `_prepare_github_repo` runs `git fetch origin <revision>` between clone and checkout, because a clone only downloads objects reachable from refs and a force-push orphans the pinned commit. A `fatal: reference is not a tree` failure means that fetch was skipped, never that the corpus entry is stale — do not re-pin in response to it.
 - **Governance gates labels.** `benchmark-governance.yaml` is currently `bootstrap_self_review` with a single maintainer, so author and reviewer may match. Switching to `peer_review` requires distinct author/reviewer, both in the maintainer list. Fixture `review.review_mode` must equal the governance mode.
 - **Confidence is heuristic, not calibrated.** `agreement` is fed by the detector *and* contributes to `signal_strength`, so scores double-count by design (`docs/scoring.md`). Buckets: `>=0.85` high, `>=0.65` medium, `>=0.40` low, else `do_not_operationalize`. Changing weights or thresholds invalidates the committed baseline — rerun the benchmark and record the delta.
-- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new `Detector` subclass file registered in `detectors/__init__.py::DETECTORS`, every one of the 34 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, the golden in `tests/fixtures/golden/`, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
+- **Adding a seventh convention target touches everything.** `ConventionTarget` (literal), `ConventionExpectation` (all fields required), a new `Detector` subclass file registered in `detectors/__init__.py::DETECTORS`, every one of the 63 entries in `benchmarks/public/express_v1.yaml` plus the test fixtures, the golden in `tests/fixtures/golden/`, and the hardcoded `len(fixture.repos) * 6` assertion in `tests/test_public_benchmark.py`. Confirm the maintainer wants that blast radius first.
 - **Corpus admission has a written policy.** `docs/benchmarks/public-corpus-policy.md` — public, non-fork, non-archived Express *application*, one of five allowed SPDX licenses, SHA-pinned, with a diversity rationale. No third-party source checkouts are committed.
 
 ## Current progress
 
 Read `docs/benchmarks/` for state; it is the running log.
 
-- Corpus: 34 SHA-pinned public repos, 204 reviewed convention rows.
-- Weakest detectors per `express-v1-calibration-analysis.md`: `service_repository_layering` (0.65 accuracy) and `route_controller_boundary` (0.71). Clean/hexagonal architectures, request-handler boundaries, and direct ORM access are the known blind spots.
-- Strongest: `auth_middleware_presence` and `test_layout_shape` (0.94 each).
-- Next planned step: batch 04 corpus expansion — 30 scouted candidates await label review in `public-express-expansion-batch-04-scouting.md`. Those SHAs are scout pins, not benchmark truth.
+- Corpus: 63 SHA-pinned public repos, 378 reviewed convention rows (batch 04 admitted 2026-08-31).
+- Batch 04's 29 repos are **training data**; eleven repos named in `changes/2026-08-31-layering-detector-redesign.md` are **held out** for validation.
+- On the 63-repo corpus: `service_repository_layering` 0.57 and `route_declaration_style` 0.65 are weakest; `route_controller_boundary` is 0.83 after the 2026-08-31 vocabulary fix. Clean/hexagonal layering is the main remaining gap.
+- Strongest: `test_layout_shape` 0.94 and `auth_middleware_presence` 0.90.
+- Next planned step: the layering detector redesign in `changes/2026-08-31-layering-detector-redesign.md` — role census, call-site signals, and comparison-based rules. Steps 2 and 4 of that plan must land together.
 
 
 ## Detector package conventions
@@ -170,7 +172,7 @@ A detector must never import from `__init__.py`, and `base.py` must never import
 
 **Value objects use stdlib `dataclasses`, frozen.** Pydantic models belong in `models.py`, where they cross stage boundaries. A one-element `conflicts` tuple needs its trailing comma.
 
-**Verification.** `tests/test_detector_characterization.py` pins all 54 fixture assessments to `tests/fixtures/golden/express_assessments.json`. Regenerate it only when an accuracy change is intended, never to make a failing assertion pass. `.github/workflows/public-benchmark.yml` re-exports the calibration dataset and diffs it against the committed 204-row `benchmarks/public/calibration/express_v1.jsonl` -- that is the corpus-wide guard.
+**Verification.** `tests/test_detector_characterization.py` pins all 54 fixture assessments to `tests/fixtures/golden/express_assessments.json`. Regenerate it only when an accuracy change is intended, never to make a failing assertion pass. `.github/workflows/public-benchmark.yml` re-exports the calibration dataset and diffs it against the committed 378-row `benchmarks/public/calibration/express_v1.jsonl` -- that is the corpus-wide guard.
 
 ## Known deviations from the working agreement
 
