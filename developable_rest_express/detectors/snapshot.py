@@ -93,6 +93,11 @@ class RepoSnapshot:
         return any(path.name.startswith(stem) for path in self.root.glob(f"{stem}.*"))
 
     @cached_property
+    def route_file_set(self) -> frozenset[Path]:
+        """Return :attr:`route_files` as a set, for membership tests."""
+        return frozenset(self.route_files)
+
+    @cached_property
     def package_text(self) -> str:
         """Return ``package.json`` re-serialized as lowercase JSON text."""
         return json.dumps(self.package_data).lower()

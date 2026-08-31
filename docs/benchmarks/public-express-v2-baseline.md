@@ -22,12 +22,12 @@ Batch 04's 29 repositories are **training data**. Eleven repositories, named in
 | route_declaration_style | 0.6508 | 0.6346 | 0.7273 |
 | route_controller_boundary | 0.8254 | 0.7885 | 1.0000 |
 | validation_at_edge_pattern | 0.7302 | 0.7115 | 0.8182 |
-| service_repository_layering | 0.5714 | 0.5577 | 0.6364 |
+| service_repository_layering | 0.8254 | 0.8462 | 0.7273 |
 | auth_middleware_presence | 0.9048 | 0.9038 | 0.9091 |
 | test_layout_shape | 0.9365 | 0.9423 | 0.9091 |
-| **mean** | **0.7699** | | |
+| **mean** | **0.8122** | | |
 
-Precision by confidence bucket: high `0.9265`, medium `0.7125`, low `0.6220`.
+Precision by confidence bucket: high `0.9091`, medium `0.7875`, low `0.6800`.
 44 ambiguous repositories, 68 unsupported conventions, 55 false positives, 32 false negatives.
 
 ## Reading these numbers honestly
@@ -61,9 +61,19 @@ component in the package already had:
 On the 34-repo corpus those moved `route_controller_boundary` from 0.7059 to 0.9118 and
 `route_declaration_style` from 0.7353 to 0.7647.
 
+## Layering redesign
+
+`service_repository_layering` was redesigned on 2026-08-31 after this baseline was first recorded,
+moving from 0.5714 to 0.8254 overall (training 0.8462, held out 0.7273) with no other convention
+changing by a single repository. Layer membership now comes from per-file role assignment rather than
+directory presence, repository layers that exist only as ORM call sites are detected, and the rules run
+narrow to broad with magnitude comparisons. See
+`changes/2026-08-31-layering-detector-redesign.md`.
+
+The table above reflects the redesigned detector. The train/holdout gap of 0.8462 against 0.7273 is
+real overfitting; quote the held-out figure.
+
 ## Standing gate
 
-MCP and skill emission remain unauthorized. `service_repository_layering` at 0.5714 is the binding
-constraint; the redesign that addresses it is planned in
-`changes/2026-08-31-layering-detector-redesign.md` and must be validated on the held-out set rather
-than on the corpus it is fitted to.
+MCP and skill emission remain unauthorized. `route_declaration_style` at 0.6508 is now the weakest
+convention and the binding constraint.

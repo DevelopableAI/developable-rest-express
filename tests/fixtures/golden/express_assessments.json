@@ -288,11 +288,11 @@
         "test_evidence_rate": 0.5
       },
       "evidence": [
-        "Controller directories detected: 2.",
+        "Controller directories detected: 1.",
         "Service directories detected: 1.",
         "Repository directories detected: 0.",
         "Manager directories detected: 0.",
-        "Model directories detected: 2.",
+        "Model directories detected: 1.",
         "Application/ports/infrastructure directories: 0/0/0.",
         "Controller->service imports: 1.",
         "Service->repository imports: 0.",
@@ -458,7 +458,7 @@
       ],
       "ambiguous": true,
       "bucket": "low",
-      "confidence": 0.6464,
+      "confidence": 0.6298,
       "conflicts": [],
       "convention_name": "service_repository_layering",
       "coverage": 1.0,
@@ -466,11 +466,11 @@
         "ambiguity_rate": 0.85,
         "independent_detector_agreement": 0.5,
         "parser_match_rate": 0.0,
-        "structural_match_rate": 0.6667,
+        "structural_match_rate": 0.3333,
         "test_evidence_rate": 1.0
       },
       "evidence": [
-        "Controller directories detected: 2.",
+        "Controller directories detected: 1.",
         "Service directories detected: 0.",
         "Repository directories detected: 0.",
         "Manager directories detected: 0.",
@@ -488,7 +488,7 @@
         "Feature service files detected: 0."
       ],
       "inferred_value": "layering_unclear",
-      "signal_strength": 0.4058,
+      "signal_strength": 0.3392,
       "source_type": "deterministic",
       "supported": false
     },
@@ -652,7 +652,7 @@
         "test_evidence_rate": 1.0
       },
       "evidence": [
-        "Controller directories detected: 2.",
+        "Controller directories detected: 1.",
         "Service directories detected: 1.",
         "Repository directories detected: 1.",
         "Manager directories detected: 0.",

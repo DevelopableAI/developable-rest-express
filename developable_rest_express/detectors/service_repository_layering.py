@@ -7,6 +7,7 @@ from dataclasses import dataclass, replace
 from typing import ClassVar, Iterable, Sequence
 
 from ..models import ConventionTarget, DetectorMetrics
+from .roles import CONTROLLER, MANAGER, SERVICE, assign_roles, count_orm_repository_calls, take_census
 from .base import (
     DATA_ACCESS_MARKERS,
     Classification,
@@ -63,19 +64,22 @@ def _mentions_any(specifier: str, tokens: Iterable[str]) -> bool:
 class LayeringSignals:
     """Structural layering markers observed in one repository.
 
-    Directory counts are measured from each file's own package manifest, while
-    the import edges are attributed using snapshot-root-relative paths. The two
-    measures deliberately differ; see :class:`RepoSnapshot`.
+    Layer membership comes from per-file role assignment rather than from the
+    presence of a directory, so a repository organised by feature counts the
+    same as one organised by layer. Import edges are attributed from the source
+    file's role to the token named in the specifier.
     """
 
-    controller_dirs: int
-    service_dirs: int
-    repository_dirs: int
-    manager_dirs: int
-    model_dirs: int
+    controllers: int
+    services: int
+    repositories: int
+    managers: int
+    models: int
     application_dirs: int
     ports_dirs: int
     infrastructure_dirs: int
+    domain_dirs: int
+    usecase_dirs: int
     handler_dirs: int
     controller_to_service: int
     controller_to_repository: int
@@ -86,68 +90,97 @@ class LayeringSignals:
     manager_to_model: int
     route_to_repository: int
     route_direct_data_access: int
+    route_to_service: int
+    orm_repository_calls: int
     feature_service_files: int
+    layered_service_dirs: int
     declares_resource_router: bool
+
+    @property
+    def is_feature_organised(self) -> bool:
+        """Return whether services exist only inside feature modules."""
+        if self.has_repository_layer:
+            return False
+        return bool(self.feature_service_files) and not self.layered_service_dirs
+
+    @property
+    def has_repository_layer(self) -> bool:
+        """Return whether a repository layer exists as files or as ORM call sites."""
+        return bool(self.repositories or self.orm_repository_calls)
+
+    @property
+    def reaches_repository_over_service(self) -> bool:
+        """Return whether controllers reach repositories rather than services.
+
+        Two shapes count. Controllers may import a repository module more often
+        than a service, or the repository may exist only as ORM call sites with
+        no service layer to go through at all.
+        """
+        if self.controller_to_repository > self.controller_to_service:
+            return True
+        return bool(self.orm_repository_calls) and not self.services
+
+    @property
+    def is_layered_architecture(self) -> bool:
+        """Return whether the tree separates an application core from adapters."""
+        core = self.application_dirs or self.usecase_dirs or self.domain_dirs
+        edge = self.ports_dirs or self.infrastructure_dirs
+        if core and edge:
+            return True
+        return bool(self.usecase_dirs and self.domain_dirs)
 
 
 LAYERING_RULES: tuple[Rule[LayeringSignals], ...] = (
     Rule(
         Classification(CLEAN_ARCHITECTURE_PORTS, 0.12),
-        lambda s: bool(s.application_dirs and s.ports_dirs and s.infrastructure_dirs),
+        lambda s: s.is_layered_architecture,
     ),
     Rule(
         Classification(REPOSITORY_ONLY, 0.18),
-        lambda s: bool(s.route_to_repository) and not s.controller_dirs,
+        lambda s: bool(s.route_to_repository) and not s.controllers,
     ),
     Rule(
         Classification(FLAT_HANDLERS, 0.2),
-        lambda s: bool(s.route_direct_data_access) and not s.controller_dirs,
+        lambda s: bool(s.route_direct_data_access)
+        and not s.controllers
+        and not s.route_to_service,
+    ),
+    Rule(
+        Classification(CONTROLLER_REPOSITORY, 0.3),
+        lambda s: bool(s.controllers)
+        and s.has_repository_layer
+        and s.reaches_repository_over_service,
+    ),
+    Rule(
+        Classification(FEATURE_SERVICE_LAYER, 0.25),
+        lambda s: s.is_feature_organised,
     ),
     Rule(
         Classification(CONTROLLER_SERVICE_REPOSITORY, 0.08),
-        lambda s: bool(
-            s.controller_dirs
-            and s.service_dirs
-            and s.repository_dirs
-            and s.controller_to_service
-            and s.service_to_repository
-        ),
+        lambda s: bool(s.controllers and s.services and s.controller_to_service)
+        and s.has_repository_layer
+        and bool(s.service_to_repository or s.orm_repository_calls),
     ),
     Rule(
         Classification(CONTROLLER_SERVICE_MODEL, 0.12),
         lambda s: bool(
-            s.controller_dirs
-            and s.service_dirs
-            and s.model_dirs
-            and s.controller_to_service
-            and s.service_to_model
+            s.controllers and s.services and s.controller_to_service and s.service_to_model
         ),
     ),
     Rule(
         Classification(CONTROLLER_MANAGER_MODEL, 0.12),
         lambda s: bool(
-            s.controller_dirs
-            and s.manager_dirs
-            and s.model_dirs
-            and s.controller_to_manager
-            and s.manager_to_model
+            s.controllers and s.managers and s.models
+            and s.controller_to_manager and s.manager_to_model
         ),
     ),
     Rule(
         Classification(CONTROLLER_MODEL, 0.18),
-        lambda s: bool(s.controller_dirs and s.model_dirs and s.controller_to_model),
-    ),
-    Rule(
-        Classification(CONTROLLER_REPOSITORY, 0.3),
-        lambda s: bool(s.controller_dirs and s.repository_dirs and s.controller_to_repository),
+        lambda s: bool(s.controllers and s.models and s.controller_to_model),
     ),
     Rule(
         Classification(SERVICE_DATA_ACCESS, 0.2),
-        lambda s: bool(s.service_dirs and s.model_dirs),
-    ),
-    Rule(
-        Classification(FEATURE_SERVICE_LAYER, 0.25),
-        lambda s: bool(s.feature_service_files),
+        lambda s: bool(s.services and s.models) and not s.controllers,
     ),
     Rule(Classification(FLAT_HANDLERS, 0.25), lambda s: s.declares_resource_router),
     Rule(Classification(FLAT_HANDLERS, 0.45), lambda s: bool(s.handler_dirs)),
@@ -169,29 +202,37 @@ def _conflicts_for(value: str, signals: LayeringSignals) -> tuple[str, ...]:
     return ()
 
 
-def _count_import_edges(snapshot: RepoSnapshot) -> Counter[str]:
-    """Count layer-to-layer import edges in a single pass over the code files."""
+def _count_import_edges(snapshot: RepoSnapshot, roles: dict) -> Counter[str]:
+    """Count layer-to-layer import edges in a single pass over the code files.
+
+    The source layer is the file's assigned role; the target layer is inferred
+    from the tokens in the import specifier.
+    """
     edges: Counter[str] = Counter()
-    route_files = set(snapshot.route_files)
+    route_files = snapshot.route_file_set
     for path in snapshot.code_files:
         specifiers = snapshot.imports_in(path)
-        parts = snapshot.relative_parts(path)
-        if CONTROLLER_DIRECTORIES & parts or "controller" in path.stem.lower():
+        role = roles.get(path)
+        if role == CONTROLLER:
             edges["controller_to_service"] += _count_mentions(specifiers, "service")
             edges["controller_to_repository"] += _count_mentions(specifiers, "repo")
             edges["controller_to_manager"] += _count_mentions(specifiers, "manager")
-            edges["controller_to_model"] += _count_mentions(specifiers, "model")
-        if "services" in parts:
+            edges["controller_to_model"] += _count_data_access(specifiers)
+        elif role == SERVICE:
             edges["service_to_repository"] += _count_mentions(specifiers, "repo")
-            edges["service_to_model"] += _count_mentions(specifiers, "model")
-        if MANAGER_DIRECTORIES & parts:
-            edges["manager_to_model"] += _count_mentions(specifiers, "model")
+            edges["service_to_model"] += _count_data_access(specifiers)
+        elif role == MANAGER:
+            edges["manager_to_model"] += _count_data_access(specifiers)
         if path in route_files:
             edges["route_to_repository"] += _count_mentions(specifiers, "repo")
-            edges["route_direct_data_access"] += sum(
-                _mentions_any(item, DATA_ACCESS_MARKERS) for item in specifiers
-            )
+            edges["route_direct_data_access"] += _count_data_access(specifiers)
+            edges["route_to_service"] += _count_mentions(specifiers, "service")
     return edges
+
+
+def _count_data_access(specifiers: Sequence[str]) -> int:
+    """Count specifiers addressing a data-access module of any kind."""
+    return sum(_mentions_any(item, DATA_ACCESS_MARKERS) for item in specifiers)
 
 
 class ServiceRepositoryLayeringDetector(Detector):
@@ -213,24 +254,21 @@ class ServiceRepositoryLayeringDetector(Detector):
 
     @staticmethod
     def _gather(snapshot: RepoSnapshot) -> LayeringSignals:
-        edges = _count_import_edges(snapshot)
-        named_controllers = sum("controller" in path.stem.lower() for path in snapshot.code_files)
-        named_models = sum("model" in path.stem.lower() for path in snapshot.code_files)
+        roles = assign_roles(snapshot)
+        census = take_census(roles)
+        edges = _count_import_edges(snapshot, roles)
         return LayeringSignals(
-            controller_dirs=snapshot.directory_count("controllers")
-            + snapshot.directory_count("controller")
-            + named_controllers,
-            service_dirs=snapshot.directory_count("services"),
-            repository_dirs=snapshot.directory_count("repositories")
-            + snapshot.directory_count("repos"),
-            manager_dirs=snapshot.directory_count("manager")
-            + snapshot.directory_count("managers"),
-            model_dirs=snapshot.directory_count("models")
-            + snapshot.directory_count("model")
-            + named_models,
+            controllers=census.controllers,
+            services=census.services,
+            repositories=census.repositories,
+            managers=census.managers,
+            models=census.models,
             application_dirs=snapshot.directory_count("application"),
             ports_dirs=snapshot.directory_count("ports"),
             infrastructure_dirs=snapshot.directory_count("infrastructure"),
+            domain_dirs=snapshot.directory_count("domain"),
+            usecase_dirs=snapshot.directory_count("use-cases")
+            + snapshot.directory_count("usecases"),
             handler_dirs=snapshot.directory_count("handlers"),
             controller_to_service=edges["controller_to_service"],
             controller_to_repository=edges["controller_to_repository"],
@@ -241,11 +279,14 @@ class ServiceRepositoryLayeringDetector(Detector):
             manager_to_model=edges["manager_to_model"],
             route_to_repository=edges["route_to_repository"],
             route_direct_data_access=edges["route_direct_data_access"],
+            route_to_service=edges["route_to_service"],
+            orm_repository_calls=count_orm_repository_calls(snapshot),
             feature_service_files=sum(
                 bool(FEATURE_DIRECTORIES & snapshot.relative_parts(path))
                 and "service" in path.stem.lower()
                 for path in snapshot.code_files
             ),
+            layered_service_dirs=snapshot.directory_count("services"),
             declares_resource_router="resource-router-middleware" in snapshot.package_text,
         )
 
@@ -270,11 +311,11 @@ class ServiceRepositoryLayeringDetector(Detector):
             + signals.route_direct_data_access
         )
         layer_directories = (
-            signals.controller_dirs
-            + signals.service_dirs
-            + signals.repository_dirs
-            + signals.manager_dirs
-            + signals.model_dirs
+            signals.controllers
+            + signals.services
+            + signals.repositories
+            + signals.managers
+            + signals.models
         )
         return DetectorMetrics(
             parser_match_rate=ratio(traced_edges, max(len(snapshot.code_files), 1) * 2),
@@ -287,11 +328,11 @@ class ServiceRepositoryLayeringDetector(Detector):
     @staticmethod
     def _evidence(signals: LayeringSignals) -> tuple[str, ...]:
         return (
-            f"Controller directories detected: {signals.controller_dirs}.",
-            f"Service directories detected: {signals.service_dirs}.",
-            f"Repository directories detected: {signals.repository_dirs}.",
-            f"Manager directories detected: {signals.manager_dirs}.",
-            f"Model directories detected: {signals.model_dirs}.",
+            f"Controller directories detected: {signals.controllers}.",
+            f"Service directories detected: {signals.services}.",
+            f"Repository directories detected: {signals.repositories}.",
+            f"Manager directories detected: {signals.managers}.",
+            f"Model directories detected: {signals.models}.",
             "Application/ports/infrastructure directories: "
             f"{signals.application_dirs}/{signals.ports_dirs}/{signals.infrastructure_dirs}.",
             f"Controller->service imports: {signals.controller_to_service}.",
