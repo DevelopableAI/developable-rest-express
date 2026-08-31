@@ -7,7 +7,7 @@ review:
   reviewer: adityaarchunananand
   review_mode: bootstrap_self_review
   reviewed_at: 2026-08-30
-  rationale: Initial labels and expansion batches 01 through 03 were inspected against pinned public source snapshots. On 2026-08-30 ckdnd99-node-express-drizzle-api was re-pinned from c74b517053f7b079f7b288b7c3c5741100f52836, which a force-push orphaned from the default branch and which is no longer clone-reachable, to f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de. Its six labels were re-reviewed against source at the new pin and are unchanged; the analyzer-visible file set is byte-identical between the two commits.
+  rationale: Initial labels and expansion batches 01 through 03 were inspected against pinned public source snapshots. On 2026-08-30 ckdnd99-node-express-drizzle-api was re-pinned from c74b517053f7b079f7b288b7c3c5741100f52836, orphaned from the default branch by a force-push and no longer clone-reachable, to f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de; its six labels were re-reviewed against source at the new pin and are unchanged, the analyzer-visible file set being byte-identical between the two commits. Also on 2026-08-30, all 22 boundary and layering mismatches from benchmark run 33340110846 were reviewed against source at their pinned SHAs. One label was corrected. The service_repository_layering label for q00-api-server-boilerplate moves from controller_service_repository to controller_service_model, because the repository layer it asserted does not exist; that repository has src/controller, src/service and src/model, and no repository file or directory. The other 21 labels were confirmed correct against source. On 2026-08-31 that re-pin was found to have been unnecessary. The original commit was never unreachable on the remote; the harness cloned without fetching the pinned revision by name, so a force-pushed commit could not be checked out. workspace._prepare_github_repo now fetches the revision explicitly and both pins materialize. The corpus keeps f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de as the reviewed commit of record, the two trees being byte-identical over analyzer-visible files. Batch 04 was admitted on 2026-08-31, expanding the corpus from 34 to 63 repositories. All 30 scouted candidates passed the objective corpus-policy checks; one, zarif007/ez-node-ts-express-mongoose-boilerplate, was excluded as a generated-only example whose controllers, services, models and routes are emitted by a scaffold generator rather than present in source. The remaining 29 were labelled from source inspection at their pinned SHAs, with the supporting evidence recorded per label. Batch 04 repositories are designated training data; the eleven repositories named in the redesign plan remain held out for validation.
 
 repos:
   - repo_id: node-express-boilerplate
@@ -113,6 +113,93 @@ repos:
     source: https://github.com/steve-lebleu/typeplate.git
     revision: a5b106f546a8a9b30e32481da590a9add4e7b304
 
+  - repo_id: Joliwood-osport-server
+    source: https://github.com/Joliwood/osport-server.git
+    revision: 2d094a344592f62308a18160c410f855bb036adc
+  - repo_id: rafaelfl-express-typescript-auth
+    source: https://github.com/rafaelfl/express-typescript-auth.git
+    revision: 514000b2a0dc928762fd408a46e4fd54c4468ead
+  - repo_id: skarif2-node-rest-starter
+    source: https://github.com/skarif2/node-rest-starter.git
+    revision: 209939b882194bcb78ad035a94d489500e6c3fce
+  - repo_id: cristian-azocar-microservice-boilerplate
+    source: https://github.com/cristian-azocar/microservice-boilerplate.git
+    revision: dbb03956864e5b2b4fcabc41de5760e31972b961
+  - repo_id: israelmuca-express-i18n-api
+    source: https://github.com/israelmuca/express-i18n-api.git
+    revision: 0bff55f378e6485f21967cf464b06837ed2d3fd6
+  - repo_id: bush1D3v-tsbank_api
+    source: https://github.com/bush1D3v/tsbank_api.git
+    revision: 3e307c1790cd99bfcb3dd09d9a7638fbcfe8eb07
+  - repo_id: lucanovello-starter-express-prisma-jwt
+    source: https://github.com/lucanovello/starter-express-prisma-jwt.git
+    revision: 6bcd86b522e7014658c215d1c3b0372a24d87a30
+  - repo_id: frckbrice-farming-product-REST-api
+    source: https://github.com/frckbrice/farming-product-REST-api.git
+    revision: cc27a2edd77e7dba6e4202cad9b9f001610cc8e5
+  - repo_id: KhaledSaeed18-node-express-boilerplate
+    source: https://github.com/KhaledSaeed18/node-express-boilerplate.git
+    revision: 438a928d6edba31b1f968b389a57ae53430cfb97
+  - repo_id: Prasunjais-express-boiler-plate
+    source: https://github.com/Prasunjais/express-boiler-plate.git
+    revision: faac67244a51fdf8b5c397c6e1d4d8563dbd7199
+  - repo_id: Aron-HD-rest-api
+    source: https://github.com/Aron-HD/rest-api.git
+    revision: 9591fcb9ebea4e33f84d9fd1ff74dce6ce636e27
+  - repo_id: FawzyMokhtar-TypeScript-in-Nodejs-Starter
+    source: https://github.com/FawzyMokhtar/TypeScript-in-Nodejs-Starter.git
+    revision: 5c94196b267dd534352eb065951e1a0d58ca3f34
+  - repo_id: yug95-node-mysql
+    source: https://github.com/yug95/node-mysql.git
+    revision: 93828eff9fa89ada918d8198cd3c282e50d210ef
+  - repo_id: jpedroschmitz-gobarber-api
+    source: https://github.com/jpedroschmitz/gobarber-api.git
+    revision: 794cd7d5e1da9e93ffed8a55f80ec3118ffe5c5b
+  - repo_id: Canario0-hexagonal-express
+    source: https://github.com/Canario0/hexagonal-express.git
+    revision: 361c2d81453c00e1ea8c3a9b4dcddd90a9a2775c
+  - repo_id: LCcodder-nodejs-hexagonal-architecture-boilerplate
+    source: https://github.com/LCcodder/nodejs-hexagonal-architecture-boilerplate.git
+    revision: 6096e359ca53f10acd08a5041a95bc7fd659473f
+  - repo_id: luizomf-clean-architecture-api-boilerplate
+    source: https://github.com/luizomf/clean-architecture-api-boilerplate.git
+    revision: 7fb1ba431f8dd3d9f581798c072019eceb72d73e
+  - repo_id: eldimious-nodejs-api-showcase
+    source: https://github.com/eldimious/nodejs-api-showcase.git
+    revision: 6a35edb0b0a14cf3e951ff87c110b89022102d8a
+  - repo_id: vyancharuk-nodejs-api-boilerplate
+    source: https://github.com/vyancharuk/nodejs-api-boilerplate.git
+    revision: 9b8343b05fee2677a392262146a08e94443ca718
+  - repo_id: Shyam-Chen-Express-Starter
+    source: https://github.com/Shyam-Chen/Express-Starter.git
+    revision: 90d73b02836c734c2256fe71b741cd3b0823dd19
+  - repo_id: mrmovas-Express-BetterAuth-Boilerplate
+    source: https://github.com/mrmovas/Express-BetterAuth-Boilerplate.git
+    revision: 5ff1b6a4d2d435e8718b631e380d6cc748d859c4
+  - repo_id: EQuimper-nodejs-api-boilerplate
+    source: https://github.com/EQuimper/nodejs-api-boilerplate.git
+    revision: cc702d73f14aec7e3eb88547bdbb2837ec0d6d7a
+  - repo_id: aichbauer-express-rest-api-boilerplate
+    source: https://github.com/aichbauer/express-rest-api-boilerplate.git
+    revision: fa0fa7cf8979bfc6d5b12283286b4a5d4b3d43ed
+  - repo_id: hamidukarimi-authforge-express
+    source: https://github.com/hamidukarimi/authforge-express.git
+    revision: 30268316c31b388a8bc5bfc04b2d2f5bcf628411
+  - repo_id: pallavi-shekhar-twitter-clone-backend
+    source: https://github.com/pallavi-shekhar/twitter-clone-backend.git
+    revision: 7b8e0a6d22f00cff54fcc8b3d9e51f4478f57f77
+  - repo_id: maitraysuthar-rest-api-nodejs-mongodb
+    source: https://github.com/maitraysuthar/rest-api-nodejs-mongodb.git
+    revision: 6a1ba2da70a26b010d5aa1791a778a69b8ce7396
+  - repo_id: smaje99-express-typescript-hexagonal-architecture
+    source: https://github.com/smaje99/express-typescript-hexagonal-architecture.git
+    revision: ebb82d19597bc08b38d20e590876f5eae3a29b2a
+  - repo_id: jerrychong25-node-express-mongo-passport-jwt-typescript
+    source: https://github.com/jerrychong25/node-express-mongo-passport-jwt-typescript.git
+    revision: d6148da8af71b400ddf1f1a74ab72f3a620485c5
+  - repo_id: antonio-lazaro-prisma-express-typescript-boilerplate
+    source: https://github.com/antonio-lazaro/prisma-express-typescript-boilerplate.git
+    revision: 346d60f6eb21dcee98f9ad63794958283091f248
 expected_conventions:
   node-express-boilerplate:
     route_declaration_style: express_router_modules
@@ -258,7 +345,7 @@ expected_conventions:
     route_declaration_style: decorator_routing
     route_controller_boundary: routes_call_controllers
     validation_at_edge_pattern: no_clear_validation
-    service_repository_layering: controller_service_repository
+    service_repository_layering: controller_service_model
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: jest_supertest_layout
   davidrodarte-prisma-express-template:
@@ -353,6 +440,209 @@ expected_conventions:
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: mocha_supertest_layout
 
+  Joliwood-osport-server:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  rafaelfl-express-typescript-auth:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  skarif2-node-rest-starter:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: jest_supertest_layout
+  cristian-azocar-microservice-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  israelmuca-express-i18n-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: layering_unclear
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: mocha_test_layout
+  bush1D3v-tsbank_api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  lucanovello-starter-express-prisma-jwt:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  frckbrice-farming-product-REST-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  KhaledSaeed18-node-express-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: vitest_test_layout
+  Prasunjais-express-boiler-plate:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_test_layout
+  Aron-HD-rest-api:
+    route_declaration_style: inline_app_routes
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  FawzyMokhtar-TypeScript-in-Nodejs-Starter:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: repository_only
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+  yug95-node-mysql:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: service_data_access
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: no_clear_tests
+  jpedroschmitz-gobarber-api:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  Canario0-hexagonal-express:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: jest_test_layout
+  LCcodder-nodejs-hexagonal-architecture-boilerplate:
+    route_declaration_style: inline_app_routes
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  luizomf-clean-architecture-api-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  eldimious-nodejs-api-showcase:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: mocha_supertest_layout
+  vyancharuk-nodejs-api-boilerplate:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: controller_service_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  Shyam-Chen-Express-Starter:
+    route_declaration_style: feature_router_modules
+    route_controller_boundary: routes_call_services
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: feature_service_layer
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  mrmovas-Express-BetterAuth-Boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_repositories
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: flat_handlers
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  EQuimper-nodejs-api-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_test_layout
+  aichbauer-express-rest-api-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  hamidukarimi-authforge-express:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: basic_test_layout
+  pallavi-shekhar-twitter-clone-backend:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_repository
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
+  maitraysuthar-rest-api-nodejs-mongodb:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: controller_validation
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: mocha_test_layout
+  smaje99-express-typescript-hexagonal-architecture:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: clean_architecture_ports
+    auth_middleware_presence: auth_middleware_unclear
+    test_layout_shape: jest_test_layout
+  jerrychong25-node-express-mongo-passport-jwt-typescript:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: no_clear_validation
+    service_repository_layering: controller_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: no_clear_tests
+  antonio-lazaro-prisma-express-typescript-boilerplate:
+    route_declaration_style: express_router_modules
+    route_controller_boundary: routes_call_controllers
+    validation_at_edge_pattern: route_validation_middleware
+    service_repository_layering: controller_service_model
+    auth_middleware_presence: auth_middleware_present
+    test_layout_shape: jest_supertest_layout
 notes:
   - All sources satisfy the public corpus policy and are pinned to full Git commit SHAs; the committed V1 sources happened to be MIT-licensed.
   - Labels are manually reviewed benchmark truth and may intentionally disagree with detector output.

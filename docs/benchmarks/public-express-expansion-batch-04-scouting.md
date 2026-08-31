@@ -1,6 +1,8 @@
 # Public Express expansion — batch 04 scout queue
 
-This retained queue contains 30 public, permissively licensed Express application candidates, scout-verified on 2026-08-05 as non-fork and non-archived. They are **not** benchmark truth: each requires source inspection at the listed SHA, a six-convention label review, and the public corpus-policy admission checks before entering a fixture.
+**ADMITTED 2026-08-31.** 29 of these 30 entered the corpus; see [the batch 04 label review](public-express-expansion-batch-04-label-review.md). This queue is retained as the scouting record.
+
+This queue contains 30 public, permissively licensed Express application candidates, scout-verified on 2026-08-05 as non-fork and non-archived. They were **not** benchmark truth when scouted: each requires source inspection at the listed SHA, a six-convention label review, and the public corpus-policy admission checks before entering a fixture.
 
 | Candidate | Pinned scout SHA | License | Coverage reason |
 | --- | --- | --- | --- |
