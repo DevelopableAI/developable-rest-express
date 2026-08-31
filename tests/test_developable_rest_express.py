@@ -22,7 +22,12 @@ from developable_rest_express.reporting import (
     render_evaluation_json,
     render_evaluation_markdown,
 )
-from developable_rest_express.workspace import RepoPreparationError, prepare_benchmark, prepare_profile
+from developable_rest_express.workspace import (
+    RepoPreparationError,
+    _prepare_github_repo,
+    prepare_benchmark,
+    prepare_profile,
+)
 
 
 FIXTURES_ROOT = Path(__file__).parent / "fixtures"
@@ -393,6 +398,8 @@ reference_repos:
                     return "https://github.com/example/pinned.git"
                 if "rev-parse" in command:
                     return revision
+                if "fetch" in command:
+                    return ""
                 if "checkout" in command:
                     return ""
                 raise AssertionError(f"Unexpected git command: {command}")
@@ -402,11 +409,46 @@ reference_repos:
             self.assertEqual(prepared[0].commit_sha, revision)
             self.assertFalse(prepared[0].prepared_from_cache)
             self.assertTrue(any("checkout" in command and "--detach" in command for command in commands))
+            self.assertTrue(any("fetch" in command and revision in command for command in commands))
             self.assertTrue((cache_root / f"example__pinned__{revision}").exists())
 
             with mock.patch("developable_rest_express.workspace._run_git", side_effect=fake_run_git):
                 cached = prepare_benchmark(fixture, Path(tmp_dir) / "benchmark.yaml", cache_root=cache_root)
             self.assertTrue(cached[0].prepared_from_cache)
+
+    def test_pinned_revision_survives_an_upstream_force_push(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            remote = root / "remote"
+            remote.mkdir()
+            (remote / "package.json").write_text('{"dependencies":{"express":"^4.0.0"}}')
+            (remote / "app.js").write_text("const express = require('express');")
+            self._git(remote, "init")
+            self._git(remote, "config", "user.email", "fixture@example.com")
+            self._git(remote, "config", "user.name", "Fixture")
+            self._git(remote, "add", ".")
+            self._git(remote, "commit", "-m", "pinned")
+            revision = self._git(remote, "rev-parse", "HEAD")
+            original_branch = self._git(remote, "rev-parse", "--abbrev-ref", "HEAD")
+
+            self._git(remote, "checkout", "--orphan", "rewritten")
+            self._git(remote, "add", ".")
+            self._git(remote, "commit", "-m", "rewritten history")
+            self._git(remote, "branch", "-D", original_branch)
+
+            with mock.patch(
+                "developable_rest_express.workspace.parse_github_repo",
+                return_value=("fixture", "pinned"),
+            ), mock.patch(
+                "developable_rest_express.workspace.canonical_github_source",
+                return_value=str(remote),
+            ):
+                prepared, from_cache = _prepare_github_repo(
+                    f"file://{remote}", "pinned", root / "cache", revision=revision
+                )
+
+            self.assertFalse(from_cache)
+            self.assertEqual(self._git(prepared, "rev-parse", "HEAD"), revision)
 
     def test_governance_rejects_self_review_after_manual_peer_switch(self) -> None:
         fixture = load_benchmark(FIXTURES_ROOT / "benchmarks" / "local_benchmark.yaml")

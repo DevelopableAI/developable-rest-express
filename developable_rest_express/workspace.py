@@ -165,6 +165,10 @@ def _prepare_github_repo(
         _run_git(clone_command, f"clone repo from {source}")
         if revision:
             _run_git(
+                ["git", "-C", str(temporary_dest), "fetch", "--quiet", "origin", revision],
+                f"fetch requested revision {revision}",
+            )
+            _run_git(
                 ["git", "-C", str(temporary_dest), "checkout", "--detach", revision],
                 f"checkout requested revision {revision}",
             )
