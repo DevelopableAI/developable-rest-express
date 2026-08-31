@@ -7,14 +7,21 @@ from dataclasses import dataclass, replace
 from typing import ClassVar, Iterable, Sequence
 
 from ..models import ConventionTarget, DetectorMetrics
-from .base import Classification, Detector, DetectorFinding, Rule, first_match, ratio
+from .base import (
+    DATA_ACCESS_MARKERS,
+    Classification,
+    Detector,
+    DetectorFinding,
+    Rule,
+    first_match,
+    ratio,
+)
 from .snapshot import RepoSnapshot
 
 
 CONTROLLER_DIRECTORIES = frozenset({"controllers", "controller"})
 MANAGER_DIRECTORIES = frozenset({"manager", "managers"})
 FEATURE_DIRECTORIES = frozenset({"api", "modules", "features"})
-DATA_ACCESS_MARKERS = ("/db", "database", "model", "prisma", "drizzle", "redis", "client")
 
 CLEAN_ARCHITECTURE_PORTS = "clean_architecture_ports"
 REPOSITORY_ONLY = "repository_only"

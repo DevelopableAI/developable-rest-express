@@ -23,6 +23,13 @@ TYPESCRIPT_REPO_QUALITY = 0.9
 JAVASCRIPT_REPO_QUALITY = 0.8
 UNSUPPORTED_FRAMEWORK_QUALITY = 0.45
 
+DATA_ACCESS_MARKERS = ("/db", "database", "model", "prisma", "drizzle", "redis", "client")
+"""Import-specifier fragments that name a data-access module.
+
+Shared because both the route-boundary and layering detectors must agree on what
+counts as reaching data directly; two copies of this list would drift apart.
+"""
+
 SignalsT = TypeVar("SignalsT")
 
 

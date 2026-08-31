@@ -11,12 +11,14 @@ from .base import ratio
 
 CODE_SUFFIXES = frozenset({".ts", ".js", ".mjs", ".cjs"})
 IGNORED_DIRECTORIES = frozenset({".git", "node_modules", "dist", "build", "coverage"})
-ROUTE_DIRECTORIES = frozenset({"routes", "route", "router"})
+ROUTE_DIRECTORIES = frozenset({"routes", "route", "router", "routers"})
 TEST_DIRECTORIES = frozenset({"test", "tests", "__tests__"})
 TEST_FILE_SUFFIXES = (".spec.ts", ".spec.js", ".test.ts", ".test.js")
 
 ROUTE_METHOD_PATTERN = re.compile(r"\b(app|router)\.(get|post|put|delete|patch|options|head)\(")
 IMPORT_PATTERN = re.compile(r"(?:from\s+['\"]([^'\"]+)['\"]|require\(['\"]([^'\"]+)['\"]\))")
+ROUTE_DECORATOR_PATTERN = re.compile(r"@(?:Json)?Controller\(")
+ROUTER_CONSTRUCTORS = ("express.Router", "Router()")
 
 MINIMUM_TEST_SIGNAL = 0.3
 
@@ -128,7 +130,11 @@ class RepoSnapshot:
         if ROUTE_DIRECTORIES & self.relative_parts(path):
             return True
         text = self.text(path)
-        return "express.Router" in text or bool(ROUTE_METHOD_PATTERN.search(text))
+        return (
+            any(marker in text for marker in ROUTER_CONSTRUCTORS)
+            or bool(ROUTE_METHOD_PATTERN.search(text))
+            or bool(ROUTE_DECORATOR_PATTERN.search(text))
+        )
 
     def _load_package_json(self) -> dict[str, object]:
         package_path = self.root / "package.json"

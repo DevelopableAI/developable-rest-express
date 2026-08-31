@@ -1102,19 +1102,19 @@
       ],
       "ambiguous": false,
       "bucket": "medium",
-      "confidence": 0.743,
+      "confidence": 0.8117,
       "conflicts": [],
       "convention_name": "route_declaration_style",
       "coverage": 1.0,
       "detector_metrics": {
         "ambiguity_rate": 0.12,
         "independent_detector_agreement": 0.85,
-        "parser_match_rate": 0.0,
-        "structural_match_rate": 0.0,
+        "parser_match_rate": 0.25,
+        "structural_match_rate": 1.0,
         "test_evidence_rate": 0.0
       },
       "evidence": [
-        "Detected 0 router-oriented files.",
+        "Detected 1 router-oriented files.",
         "Detected 0 app-level route call sites in route candidates.",
         "Detected 0 router-level route call sites in route candidates.",
         "Detected 0 controller decorators.",
@@ -1122,7 +1122,7 @@
         "Detected 1 resource-router module files."
       ],
       "inferred_value": "resource_router_modules",
-      "signal_strength": 0.302,
+      "signal_strength": 0.577,
       "source_type": "deterministic",
       "supported": true
     },
@@ -1312,28 +1312,30 @@
       "affected_repos": [
         "route_flat_data_access"
       ],
-      "ambiguous": true,
+      "ambiguous": false,
       "bucket": "low",
-      "confidence": 0.6106,
-      "conflicts": [],
+      "confidence": 0.5544,
+      "conflicts": [
+        "Route layer bypasses controllers."
+      ],
       "convention_name": "route_controller_boundary",
       "coverage": 1.0,
       "detector_metrics": {
-        "ambiguity_rate": 0.85,
+        "ambiguity_rate": 0.35,
         "independent_detector_agreement": 0.55,
-        "parser_match_rate": 0.0,
+        "parser_match_rate": 0.3333,
         "structural_match_rate": 0.0,
         "test_evidence_rate": 0.0
       },
       "evidence": [
         "Route files import controllers 0 times.",
         "Route files import services 0 times.",
-        "Route files import repositories 0 times."
+        "Route files import repositories 1 times."
       ],
-      "inferred_value": "boundary_unclear",
-      "signal_strength": 0.1325,
+      "inferred_value": "routes_call_repositories",
+      "signal_strength": 0.3075,
       "source_type": "deterministic",
-      "supported": false
+      "supported": true
     },
     {
       "affected_repos": [

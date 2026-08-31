@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 from typing import ClassVar
 
 from ..models import ConventionTarget, DetectorMetrics
-from .base import Classification, Detector, DetectorFinding, ratio
+from .base import (
+    DATA_ACCESS_MARKERS,
+    Classification,
+    Detector,
+    DetectorFinding,
+    ratio,
+)
 from .snapshot import RepoSnapshot
 
 
@@ -16,9 +23,28 @@ BOUNDARY_UNCLEAR = "boundary_unclear"
 BYPASS_CONFLICT = "Route layer bypasses controllers."
 
 
-def _mentions(specifier: str, token: str) -> bool:
-    """Return whether an import specifier mentions ``token``."""
-    return token in specifier.lower()
+CONTROLLER_MARKERS = ("controller", "handler")
+SERVICE_MARKERS = ("service",)
+REPOSITORY_MARKERS = ("repo",)
+
+
+def _role_of(specifier: str) -> str | None:
+    """Return the layer an import specifier addresses, or None.
+
+    A specifier names exactly one layer. Data-access markers are tested first so
+    that a data module living under a ``services`` directory is counted as data
+    access rather than as a service, which is what the route boundary means.
+    """
+    lowered = specifier.lower()
+    if any(marker in lowered for marker in DATA_ACCESS_MARKERS):
+        return "repository"
+    if any(marker in lowered for marker in CONTROLLER_MARKERS):
+        return "controller"
+    if any(marker in lowered for marker in SERVICE_MARKERS):
+        return "service"
+    if any(marker in lowered for marker in REPOSITORY_MARKERS):
+        return "repository"
+    return None
 
 
 @dataclass(frozen=True)
@@ -59,10 +85,11 @@ class RouteControllerBoundaryDetector(Detector):
             for path in snapshot.route_files
             for specifier in snapshot.imports_in(path)
         ]
+        roles = Counter(_role_of(item) for item in specifiers)
         return BoundarySignals(
-            controller_imports=sum(_mentions(item, "controller") for item in specifiers),
-            service_imports=sum(_mentions(item, "service") for item in specifiers),
-            repository_imports=sum(_mentions(item, "repo") for item in specifiers),
+            controller_imports=roles["controller"],
+            service_imports=roles["service"],
+            repository_imports=roles["repository"],
         )
 
     @staticmethod
