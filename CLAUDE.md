@@ -18,7 +18,7 @@ A **Python** library and CLI that statically analyzes **Express/Node.js** reposi
 
 **Express is the permanent, exclusive scope.** Not other Node frameworks, not other languages. A NestJS or FastAPI harness would be a separate library with its own corpus, labels, and baseline — never an adapter registered here. The eventual output is MCP servers and assistive agents for developing on Express.
 
-V1 deliberately stops at *evidence → heuristic score → benchmark report*. MCP config, skill, and guidance emission are future work and are not authorized until benchmark accuracy is consistently useful (`docs/benchmarks/public-express-v1-baseline.md`).
+V1 deliberately stops at *evidence → heuristic score → benchmark report*. MCP config, skill, and guidance emission are future work and are not authorized until benchmark accuracy is consistently useful (`docs/benchmarks/public-express-v2-baseline.md`; the V1 baseline is superseded and its figures must not be cited as current).
 
 The credibility claim rests on one rule: **benchmark labels are human-authored from source inspection at a pinned SHA and are never derived from analyzer output.**
 
@@ -29,7 +29,7 @@ The credibility claim rests on one rule: **benchmark labels are human-authored f
 python3 -m venv .venv && source .venv/bin/activate
 python -m pip install -e .
 
-# Full offline suite (19 tests; the public-benchmark test skips by default)
+# Full offline suite (20 tests; the public-benchmark test skips by default)
 python -m unittest discover -s tests -p 'test_*.py' -v
 
 # One test
@@ -38,7 +38,7 @@ python -m unittest tests.test_developable_rest_express.DevelopableRestExpressTes
 # Regenerate the detector golden — only when an accuracy change is intended
 DEVELOPABLE_REGENERATE_DETECTOR_GOLDEN=1 python -m unittest tests.test_detector_characterization
 
-# Opt-in: clones 34 external repos, slow
+# Opt-in: clones 63 external repos, slow
 DEVELOPABLE_RUN_PUBLIC_BENCHMARK=1 python -m unittest discover -s tests -p 'test_public_benchmark.py' -v
 ```
 
@@ -144,10 +144,8 @@ Read `docs/benchmarks/` for state; it is the running log.
 
 - Corpus: 63 SHA-pinned public repos, 378 reviewed convention rows (batch 04 admitted 2026-08-31).
 - Batch 04's 29 repos are **training data**; eleven repos named in `changes/2026-08-31-layering-detector-redesign.md` are **held out** for validation.
-- On the 63-repo corpus: `service_repository_layering` 0.57 and `route_declaration_style` 0.65 are weakest; `route_controller_boundary` is 0.83 after the 2026-08-31 vocabulary fix. Clean/hexagonal layering is the main remaining gap.
-- Strongest: `test_layout_shape` 0.94 and `auth_middleware_presence` 0.90.
-- The layering redesign landed 2026-08-31: `service_repository_layering` 0.57 -> 0.83 via a role census, ORM call-site signals, and comparison-based rules.
-- Current accuracy (63 repos): `route_declaration_style` 0.65 is weakest, then `validation_at_edge_pattern` 0.73; boundary and layering both 0.83; auth 0.90; test layout 0.94. Mean 0.81.
+- Two accuracy changes landed 2026-08-31: a vocabulary fix took `route_controller_boundary` to 0.83, and the layering redesign took `service_repository_layering` 0.57 -> 0.83 via a role census, ORM call-site signals, and comparison-based rules.
+- Current accuracy (63 repos), reproduced green on `main` by run 33796968153 on 2026-09-03: `route_declaration_style` 0.65 is weakest, then `validation_at_edge_pattern` 0.73; boundary and layering both 0.83; auth 0.90; test layout 0.94. Mean 0.81. Route declaration is now the main remaining gap.
 - Confidence buckets: high 143 rows at 0.9091, medium 160 at 0.7875, low 75 at 0.6800.
 - Step 0 of `changes/2026-09-01-route-declaration-accuracy.md` is done: `detector-accuracy-and-batch-04` fast-forwarded onto `main` at 8199dcf (2026-09-03), and the public benchmark was dispatched manually and went green on `main`, reproducing the V2 baseline row for row.
 - Next planned step: step 1 of the same plan — rebuild the training-only harness for `route_declaration_style`, baseline 0.6508 overall / 0.6346 training / 0.7273 held out.
@@ -163,9 +161,10 @@ The detectors were refactored from a single 550-line module into `detectors/`, t
 ```
 __init__.py  ->  <detector>.py  ->  base.py
                  <detector>.py  ->  snapshot.py  ->  base.py
+                 <detector>.py  ->  roles.py
 ```
 
-A detector must never import from `__init__.py`, and `base.py` must never import `snapshot` at runtime -- `snapshot` needs `ratio` from `base`, so the `if TYPE_CHECKING:` guard around `from .snapshot import RepoSnapshot` is required, not stylistic. Use relative imports, and mind the depth: `detectors/` sits directly under the package root, so it is `from ..models import`, not `...`. An absolute `from developable_rest_express.detectors import X` hides the direction. Detectors do not import each other; a small duplicated helper is preferred over cross-detector coupling.
+A detector must never import from `__init__.py`, and `base.py` must never import `snapshot` at runtime -- `snapshot` needs `ratio` from `base`, so the `if TYPE_CHECKING:` guard around `from .snapshot import RepoSnapshot` is required, not stylistic. Use relative imports, and mind the depth: `detectors/` sits directly under the package root, so it is `from ..models import`, not `...`. An absolute `from developable_rest_express.detectors import X` hides the direction. Detectors do not import each other; a small duplicated helper is preferred over cross-detector coupling. `roles.py` is the one shared helper module, added by the layering redesign: it assigns an architectural role per file and only `service_repository_layering` imports it. It carries the same `if TYPE_CHECKING:` guard around `RepoSnapshot` and reads no files itself, so `snapshot.py` still owns every filesystem read. A shared module is not the coupling the rule forbids -- a detector still must never import another detector.
 
 **Detector anatomy.** Each subclass declares `convention_name` and `unsupported_values`, and implements `detect()` returning a `DetectorFinding` assembled from four private helpers: `_gather` (signals), `_classify` or `first_match` (conclusion), `_metrics`, `_evidence`. The base owns `repo_quality`, `coverage`, `conflict_penalty`, and the `supported` / `ambiguous` flags -- never set those in a subclass. Conflicts go in the `Classification`; the base derives the penalty.
 
