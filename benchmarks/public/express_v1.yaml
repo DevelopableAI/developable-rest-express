@@ -6,8 +6,8 @@ review:
   author: adityaarchunananand
   reviewer: adityaarchunananand
   review_mode: bootstrap_self_review
-  reviewed_at: 2026-08-30
-  rationale: Initial labels and expansion batches 01 through 03 were inspected against pinned public source snapshots. On 2026-08-30 ckdnd99-node-express-drizzle-api was re-pinned from c74b517053f7b079f7b288b7c3c5741100f52836, orphaned from the default branch by a force-push and no longer clone-reachable, to f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de; its six labels were re-reviewed against source at the new pin and are unchanged, the analyzer-visible file set being byte-identical between the two commits. Also on 2026-08-30, all 22 boundary and layering mismatches from benchmark run 33340110846 were reviewed against source at their pinned SHAs. One label was corrected. The service_repository_layering label for q00-api-server-boilerplate moves from controller_service_repository to controller_service_model, because the repository layer it asserted does not exist; that repository has src/controller, src/service and src/model, and no repository file or directory. The other 21 labels were confirmed correct against source. On 2026-08-31 that re-pin was found to have been unnecessary. The original commit was never unreachable on the remote; the harness cloned without fetching the pinned revision by name, so a force-pushed commit could not be checked out. workspace._prepare_github_repo now fetches the revision explicitly and both pins materialize. The corpus keeps f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de as the reviewed commit of record, the two trees being byte-identical over analyzer-visible files. Batch 04 was admitted on 2026-08-31, expanding the corpus from 34 to 63 repositories. All 30 scouted candidates passed the objective corpus-policy checks; one, zarif007/ez-node-ts-express-mongoose-boilerplate, was excluded as a generated-only example whose controllers, services, models and routes are emitted by a scaffold generator rather than present in source. The remaining 29 were labelled from source inspection at their pinned SHAs, with the supporting evidence recorded per label. Batch 04 repositories are designated training data; the eleven repositories named in the redesign plan remain held out for validation.
+  reviewed_at: 2026-09-03
+  rationale: Initial labels and expansion batches 01 through 03 were inspected against pinned public source snapshots. On 2026-08-30 ckdnd99-node-express-drizzle-api was re-pinned from c74b517053f7b079f7b288b7c3c5741100f52836, orphaned from the default branch by a force-push and no longer clone-reachable, to f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de; its six labels were re-reviewed against source at the new pin and are unchanged, the analyzer-visible file set being byte-identical between the two commits. Also on 2026-08-30, all 22 boundary and layering mismatches from benchmark run 33340110846 were reviewed against source at their pinned SHAs. One label was corrected. The service_repository_layering label for q00-api-server-boilerplate moves from controller_service_repository to controller_service_model, because the repository layer it asserted does not exist; that repository has src/controller, src/service and src/model, and no repository file or directory. The other 21 labels were confirmed correct against source. On 2026-08-31 that re-pin was found to have been unnecessary. The original commit was never unreachable on the remote; the harness cloned without fetching the pinned revision by name, so a force-pushed commit could not be checked out. workspace._prepare_github_repo now fetches the revision explicitly and both pins materialize. The corpus keeps f3ebdc0211755ae22f5f0c8f9bb5b482aed5c3de as the reviewed commit of record, the two trees being byte-identical over analyzer-visible files. Batch 04 was admitted on 2026-08-31, expanding the corpus from 34 to 63 repositories. All 30 scouted candidates passed the objective corpus-policy checks; one, zarif007/ez-node-ts-express-mongoose-boilerplate, was excluded as a generated-only example whose controllers, services, models and routes are emitted by a scaffold generator rather than present in source. The remaining 29 were labelled from source inspection at their pinned SHAs, with the supporting evidence recorded per label. Batch 04 repositories are designated training data; the eleven repositories named in the redesign plan remain held out for validation. On 2026-09-03 the validation_at_edge_pattern vocabulary was reviewed after two labels were found that no supported value could express. Source inspection at the pinned SHAs shows all three decorator-routing repositories validate the same way, by class-validator decorators on request classes rather than by middleware in a route chain. q00-api-server-boilerplate carries 41 such decorators across 12 files including src/dto/UserDTO.ts, express-typescript-boilerplate carries 20 across 7 files including src/api/models/User.ts, and davidrodarte-prisma-express-template carries 6 across src/dtos/CreateUserDto.ts and src/dtos/LoginDto.ts. All three now carry the new value schema_class_validation. The prior labels were wrong on the source. no_clear_validation understated repositories with active decorator validation, and validation_middleware named a middleware chain that does not exist in that repository. Separately, express-typescript moves from zod_validation_middleware to route_validation_middleware, because src/api/user/userRouter.ts line 31 passes validateRequest(GetUserSchema) as route middleware, which is that shape under a library-specific name. The detector cannot yet emit schema_class_validation, so those three rows are expected mismatches until it gains the value. The labels record the source, not the analyzer.
 
 repos:
   - repo_id: node-express-boilerplate
@@ -218,7 +218,7 @@ expected_conventions:
   express-typescript-boilerplate:
     route_declaration_style: decorator_routing
     route_controller_boundary: routes_call_controllers
-    validation_at_edge_pattern: validation_middleware
+    validation_at_edge_pattern: schema_class_validation
     service_repository_layering: controller_service_repository
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: jest_test_layout
@@ -232,7 +232,7 @@ expected_conventions:
   express-typescript:
     route_declaration_style: feature_router_modules
     route_controller_boundary: routes_call_controllers
-    validation_at_edge_pattern: zod_validation_middleware
+    validation_at_edge_pattern: route_validation_middleware
     service_repository_layering: feature_service_layer
     auth_middleware_presence: auth_middleware_unclear
     test_layout_shape: vitest_test_layout
@@ -344,14 +344,14 @@ expected_conventions:
   q00-api-server-boilerplate:
     route_declaration_style: decorator_routing
     route_controller_boundary: routes_call_controllers
-    validation_at_edge_pattern: no_clear_validation
+    validation_at_edge_pattern: schema_class_validation
     service_repository_layering: controller_service_model
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: jest_supertest_layout
   davidrodarte-prisma-express-template:
     route_declaration_style: decorator_routing
     route_controller_boundary: routes_call_controllers
-    validation_at_edge_pattern: no_clear_validation
+    validation_at_edge_pattern: schema_class_validation
     service_repository_layering: service_data_access
     auth_middleware_presence: auth_middleware_present
     test_layout_shape: no_clear_tests
