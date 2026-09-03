@@ -146,7 +146,11 @@ Read `docs/benchmarks/` for state; it is the running log.
 - Batch 04's 29 repos are **training data**; eleven repos named in `changes/2026-08-31-layering-detector-redesign.md` are **held out** for validation.
 - On the 63-repo corpus: `service_repository_layering` 0.57 and `route_declaration_style` 0.65 are weakest; `route_controller_boundary` is 0.83 after the 2026-08-31 vocabulary fix. Clean/hexagonal layering is the main remaining gap.
 - Strongest: `test_layout_shape` 0.94 and `auth_middleware_presence` 0.90.
-- Next planned step: the layering detector redesign in `changes/2026-08-31-layering-detector-redesign.md` — role census, call-site signals, and comparison-based rules. Steps 2 and 4 of that plan must land together.
+- The layering redesign landed 2026-08-31: `service_repository_layering` 0.57 -> 0.83 via a role census, ORM call-site signals, and comparison-based rules.
+- Current accuracy (63 repos): `route_declaration_style` 0.65 is weakest, then `validation_at_edge_pattern` 0.73; boundary and layering both 0.83; auth 0.90; test layout 0.94. Mean 0.81.
+- Confidence buckets: high 143 rows at 0.9091, medium 160 at 0.7875, low 75 at 0.6800.
+- Next planned step: `changes/2026-09-01-route-declaration-accuracy.md`. Merge `detector-accuracy-and-batch-04` first — `main` still lacks the revision fetch and its scheduled benchmark fails without it.
+- Tuning discipline: 52 repos are training data, 11 are held out (listed in `changes/2026-08-31-layering-detector-redesign.md`). Measure on training only; open the holdout once, at the end.
 
 
 ## Detector package conventions
