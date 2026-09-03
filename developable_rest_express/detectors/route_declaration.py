@@ -13,7 +13,7 @@ from .snapshot import RepoSnapshot
 APP_ROUTE_PATTERN = re.compile(r"(?<![\w.])app\.(get|post|put|delete|patch|options|head)\(")
 ROUTER_ROUTE_PATTERN = re.compile(r"\b\w*[Rr]outer\.(get|post|put|delete|patch|options|head)\(")
 
-FEATURE_DIRECTORIES = frozenset({"api", "modules", "features"})
+FEATURE_DIRECTORIES = frozenset({"api", "modules", "features", "components"})
 
 MIN_ROUTER_MODULE_FILES = 2
 INCIDENTAL_APP_ROUTES = 2
@@ -41,7 +41,7 @@ def _is_feature_router(snapshot: RepoSnapshot, path: Path) -> bool:
     """Return whether ``path`` is a router colocated inside a feature module."""
     parts = snapshot.relative_parts(path)
     return (
-        "router" in path.stem.lower()
+        "route" in path.stem.lower()
         and "routes" not in parts
         and bool(FEATURE_DIRECTORIES & parts)
     )
