@@ -12,6 +12,7 @@ from .snapshot import RepoSnapshot
 
 APP_ROUTE_PATTERN = re.compile(r"(?<![\w.])app\.(get|post|put|delete|patch|options|head)\(")
 ROUTER_ROUTE_PATTERN = re.compile(r"\b\w*[Rr]outer\.(get|post|put|delete|patch|options|head)\(")
+ROUTE_CHAIN_PATTERN = re.compile(r"\b\w*[Rr]outer\s*\.\s*route\s*\(")
 
 FEATURE_DIRECTORIES = frozenset({"api", "modules", "features", "components"})
 
@@ -141,7 +142,10 @@ class RouteDeclarationDetector(Detector):
         return RouteDeclarationSignals(
             router_files=sum(_declares_router(text) for text in route_texts),
             app_route_hits=sum(len(APP_ROUTE_PATTERN.findall(text)) for text in route_texts),
-            router_route_hits=sum(len(ROUTER_ROUTE_PATTERN.findall(text)) for text in route_texts),
+            router_route_hits=sum(
+                len(ROUTER_ROUTE_PATTERN.findall(text)) + len(ROUTE_CHAIN_PATTERN.findall(text))
+                for text in route_texts
+            ),
             decorator_hits=sum(
                 snapshot.text(path).count("@Controller(") for path in snapshot.code_files
             ),
