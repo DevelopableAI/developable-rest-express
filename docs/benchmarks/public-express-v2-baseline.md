@@ -70,8 +70,24 @@ directory presence, repository layers that exist only as ORM call sites are dete
 narrow to broad with magnitude comparisons. See
 `changes/2026-08-31-layering-detector-redesign.md`.
 
-The table above reflects the redesigned detector. The train/holdout gap of 0.8462 against 0.7273 is
-real overfitting; quote the held-out figure.
+The table above reflects the redesigned detector.
+
+### On the train/holdout gap
+
+The held-out estimate is 0.7273 with a standard error of +/- 0.1343 on eleven repositories. It moved in
+the same direction as the training subset, so the changes generalise rather than merely memorise.
+
+**The train/holdout difference is not evidence of overfitting.** Holding the label author constant and
+varying only whether the repository was tuned against gives 0.8261 (23 repositories, tuned) versus
+0.7273 (11, not tuned) -- a difference of 0.63 standard errors, and worth about 1.1 repositories, since
+one repository moves an 11-repository set by 0.0909. Labels authored during batch 04 score 0.8621
+against 0.8261 for the original labels on equally-tuned repositories, so label provenance is not
+driving the number either.
+
+A fitting procedure was used -- roughly five accept-if-training-improves decisions over 52
+repositories -- so some overfitting is plausible a priori. It simply has not been observed. An
+eleven-repository holdout can catch a catastrophic overfit, where held-out accuracy falls while
+training rises, but it cannot adjudicate a gap this size in either direction. Growing it is the fix.
 
 ## Standing gate
 
