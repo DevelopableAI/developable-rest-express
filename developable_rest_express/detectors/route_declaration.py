@@ -10,10 +10,13 @@ from .base import Classification, Detector, DetectorFinding, Rule, first_match, 
 from .snapshot import RepoSnapshot
 
 
-APP_ROUTE_PATTERN = re.compile(r"\bapp\.(get|post|put|delete|patch|options|head)\(")
-ROUTER_ROUTE_PATTERN = re.compile(r"\brouter\.(get|post|put|delete|patch|options|head)\(")
+APP_ROUTE_PATTERN = re.compile(r"(?<![\w.])app\.(get|post|put|delete|patch|options|head)\(")
+ROUTER_ROUTE_PATTERN = re.compile(r"\b\w*[Rr]outer\.(get|post|put|delete|patch|options|head)\(")
 
 FEATURE_DIRECTORIES = frozenset({"api", "modules", "features"})
+
+MIN_ROUTER_MODULE_FILES = 2
+INCIDENTAL_APP_ROUTES = 2
 
 DECORATOR_ROUTING = "decorator_routing"
 RESOURCE_ROUTER_MODULES = "resource_router_modules"
@@ -51,7 +54,7 @@ class RouteDeclarationSignals:
     Attributes:
         router_files: Route files that construct a router.
         app_route_hits: ``app.<method>(`` call sites in route files.
-        router_route_hits: ``router.<method>(`` call sites in route files.
+        router_route_hits: Router ``<name>.<method>(`` call sites in route files.
         decorator_hits: ``@Controller(`` occurrences across all code files.
         feature_router_files: Routers colocated inside feature modules.
         resource_router_files: Files importing resource-router middleware.
@@ -69,11 +72,20 @@ class RouteDeclarationSignals:
     declares_resource_router: bool
 
 
+def _app_routes_are_incidental(signals: RouteDeclarationSignals) -> bool:
+    """Return whether a few app-level routes sit beside genuine router modules."""
+    return (
+        signals.router_files >= MIN_ROUTER_MODULE_FILES
+        and signals.app_route_hits <= INCIDENTAL_APP_ROUTES
+    )
+
+
 def _router_modules_lead(signals: RouteDeclarationSignals) -> bool:
     """Return whether router modules dominate app-level route declarations."""
     return bool(signals.router_files) and (
         signals.app_route_hits == 0
         or signals.router_route_hits >= signals.app_route_hits * 2
+        or _app_routes_are_incidental(signals)
     )
 
 
