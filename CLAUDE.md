@@ -149,7 +149,8 @@ Read `docs/benchmarks/` for state; it is the running log.
 - The layering redesign landed 2026-08-31: `service_repository_layering` 0.57 -> 0.83 via a role census, ORM call-site signals, and comparison-based rules.
 - Current accuracy (63 repos): `route_declaration_style` 0.65 is weakest, then `validation_at_edge_pattern` 0.73; boundary and layering both 0.83; auth 0.90; test layout 0.94. Mean 0.81.
 - Confidence buckets: high 143 rows at 0.9091, medium 160 at 0.7875, low 75 at 0.6800.
-- Next planned step: `changes/2026-09-01-route-declaration-accuracy.md`. Merge `detector-accuracy-and-batch-04` first — `main` still lacks the revision fetch and its scheduled benchmark fails without it.
+- Step 0 of `changes/2026-09-01-route-declaration-accuracy.md` is done: `detector-accuracy-and-batch-04` fast-forwarded onto `main` at 8199dcf (2026-09-03), and the public benchmark was dispatched manually and went green on `main`, reproducing the V2 baseline row for row.
+- Next planned step: step 1 of the same plan — rebuild the training-only harness for `route_declaration_style`, baseline 0.6508 overall / 0.6346 training / 0.7273 held out.
 - Tuning discipline: 52 repos are training data, 11 are held out (listed in `changes/2026-08-31-layering-detector-redesign.md`). Measure on training only; open the holdout once, at the end.
 
 
