@@ -145,11 +145,12 @@ Read `docs/benchmarks/` for state; it is the running log.
 - Corpus: 63 SHA-pinned public repos, 378 reviewed convention rows (batch 04 admitted 2026-08-31).
 - Batch 04's 29 repos are **training data**; eleven repos named in `changes/2026-08-31-layering-detector-redesign.md` are **held out** for validation.
 - Two accuracy changes landed 2026-08-31: a vocabulary fix took `route_controller_boundary` to 0.83, and the layering redesign took `service_repository_layering` 0.57 -> 0.83 via a role census, ORM call-site signals, and comparison-based rules.
-- Current accuracy (63 repos), reproduced green on `main` by run 33796968153 on 2026-09-03: `route_declaration_style` 0.65 is weakest, then `validation_at_edge_pattern` 0.73; boundary and layering both 0.83; auth 0.90; test layout 0.94. Mean 0.81. Route declaration is now the main remaining gap.
-- Confidence buckets: high 143 rows at 0.9091, medium 160 at 0.7875, low 75 at 0.6800.
-- Step 0 of `changes/2026-09-01-route-declaration-accuracy.md` is done: `detector-accuracy-and-batch-04` fast-forwarded onto `main` at 8199dcf (2026-09-03), and the public benchmark was dispatched manually and went green on `main`, reproducing the V2 baseline row for row.
-- Next planned step: step 1 of the same plan — rebuild the training-only harness for `route_declaration_style`, baseline 0.6508 overall / 0.6346 training / 0.7273 held out.
-- Tuning discipline: 52 repos are training data, 11 are held out (listed in `changes/2026-08-31-layering-detector-redesign.md`). Measure on training only; open the holdout once, at the end.
+- Current accuracy (63 repos), certified by run 33805790142 on `main` at 9c509ec (2026-09-03): `validation_at_edge_pattern` 0.73 is weakest; route declaration, boundary and layering all 0.83; auth 0.90; test layout 0.94. Mean 0.84.
+- Confidence buckets: high 153 rows at 0.9216, medium 150 at 0.8400, low 75 at 0.6800.
+- `changes/2026-09-01-route-declaration-accuracy.md` is complete: `route_declaration_style` 0.6508 -> 0.8254 via five changes to route counting and feature-router recognition, with no other convention moving a single row.
+- **The holdout is spent.** All eleven held-out rows were byte-identical before and after that work: training rose 0.2116, held out rose 0.0000. Nothing regressed, but there is no positive evidence of generalisation, and `h3nrzi` — the held-out member of the family the feature-router widening targeted — was not fixed. Do not tune against those eleven repos again; batch 05 should enlarge the holdout before the next accuracy change.
+- Emission gate: still closed as a blanket capability. A per-convention high-confidence gate is now arguable for `validation_at_edge_pattern`, `test_layout_shape`, `route_controller_boundary` and `auth_middleware_presence` (102 rows at 0.9608), but not for `service_repository_layering`, whose high-bucket precision 0.7647 is *worse* than its overall 0.8254. See the standing gate section of `docs/benchmarks/public-express-v2-baseline.md`.
+- Tuning discipline: 52 repos were training data, 11 were held out (listed in `changes/2026-08-31-layering-detector-redesign.md`). Measure on training only; open the holdout once, at the end.
 
 
 ## Detector package conventions
